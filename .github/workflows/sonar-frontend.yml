@@ -1,39 +1,43 @@
-name: SonarCloud - Frontend Scan (No Tests)
+name: SonarCloud - Frontend Scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   sonar-frontend:
+    name: Analyze frontend
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
-      - name: Install frontend deps
+      - name: Install frontend dependencies
         run: |
           cd frontend
           npm ci
 
-      - name: SonarCloud Scan
+      # Optional: run tests and generate coverage (uncomment if/when you add tests)
+      # - name: Run frontend tests and generate coverage
+      #   run: |
+      #     cd frontend
+      #     npm test -- --coverage
+      #     # ensure coverage/lcov.info exists at frontend/coverage/lcov.info
+
+      - name: Run SonarCloud Scan (frontend)
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           projectBaseDir: frontend
-          extra-args: >
-            -Dsonar.projectKey=jashanjotp_shopEase__frontend
-            -Dsonar.organization=jashanjotp
-            -Dsonar.sources=src
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
