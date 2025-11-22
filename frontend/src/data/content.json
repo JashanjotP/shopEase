@@ -247,20 +247,24 @@
           "meta_data":{}
         }
     ],
-    "products":[
+    "products": [
       {
         "id": 1,
         "title": "Black Sweatshirt",
-        "description": "100% Bio-washed Cotton – makes the fabric extra soft & silky. Flexible ribbed crew neck. Precisely stitched with no pilling & no fading. Provide  all-time comfort. Anytime, anywhere. Infinite range of matte-finish HD prints.",
+        "description": "100% Bio-washed Cotton – makes the fabric extra soft & silky. Flexible ribbed crew neck...",
         "category_id": 2,
         "type_id": 10,
         "brand": "Nike",
         "price": 49.99,
         "size": ["S", "M", "L"],
-        "color": ["Black","Blue"],
+        "color": ["Black", "Blue"],
         "discount": 20,
-        "thumbnail": "https://codedev.b-cdn.net/products/sweatshirt-black.jpg",
-        "images": ["https://codedev.b-cdn.net/products/sweatshirt-black.jpg", "https://codedev.b-cdn.net/products/woman-black-shirt-giving-neutral-flirtatious-poses.jpg","https://codedev.b-cdn.net/products/woman-holding-coffee-cup-smiling.jpg"],
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Black+Sweatshirt&bg=222222&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Black+Sweatshirt+1",
+          "https://fallback.pics/api/v1/600x600?text=Black+Sweatshirt+2",
+          "https://fallback.pics/api/v1/600x600?text=Black+Sweatshirt+3"
+        ],
         "rating": 4.5
       },
       {
@@ -274,8 +278,11 @@
         "size": ["S", "M", "L"],
         "color": ["White"],
         "discount": 15,
-        "images": ["https://codedev.b-cdn.net/products/tshirt-white.jpg", "https://codedev.b-cdn.net/products/tshirt-white.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/tshirt-white.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=White+Tshirt&bg=eeeeee&fg=000000",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=White+Tshirt+1",
+          "https://fallback.pics/api/v1/600x600?text=White+Tshirt+2"
+        ],
         "rating": 4.5
       },
       {
@@ -289,8 +296,11 @@
         "size": ["S", "M", "L"],
         "color": ["Purple"],
         "discount": 10,
-        "images": ["hoodie-purple1.jpg", "hoodie-purple2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/hoodie-purple.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Purple+Hoodie&bg=5a2d82&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Purple+Hoodie+1",
+          "https://fallback.pics/api/v1/600x600?text=Purple+Hoodie+2"
+        ],
         "rating": 4.6
       },
       {
@@ -304,8 +314,11 @@
         "size": ["S", "M", "L"],
         "color": ["White"],
         "discount": 5,
-        "images": ["dress-white-leaves1.jpg", "dress-white-leaves2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/dress-white-leaves.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=White+Dress&bg=ffffff&fg=333333",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=White+Dress+1",
+          "https://fallback.pics/api/v1/600x600?text=White+Dress+2"
+        ],
         "rating": 4.7
       },
       {
@@ -319,8 +332,11 @@
         "size": ["S", "M", "L"],
         "color": ["White"],
         "discount": 10,
-        "images": ["crop-top-white1.jpg", "crop-top-white2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-white.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Crop+Top+White&bg=ffffff&fg=444444",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Crop+Top+White+1",
+          "https://fallback.pics/api/v1/600x600?text=Crop+Top+White+2"
+        ],
         "rating": 4.3
       },
       {
@@ -334,8 +350,11 @@
         "size": ["S", "M", "L"],
         "color": ["Black"],
         "discount": 15,
-        "images": ["shorts-black1.jpg", "shorts-black2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/shorts-black.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Black+Shorts&bg=000000&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Black+Shorts+1",
+          "https://fallback.pics/api/v1/600x600?text=Black+Shorts+2"
+        ],
         "rating": 4.5
       },
       {
@@ -349,8 +368,11 @@
         "size": ["S", "M", "L"],
         "color": ["Blue"],
         "discount": 10,
-        "images": ["jeans-blue1.jpg", "jeans-blue2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/jeans-blue.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Skinny+Jeans&bg=1e3c78&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Skinny+Jeans+1",
+          "https://fallback.pics/api/v1/600x600?text=Skinny+Jeans+2"
+        ],
         "rating": 4.8
       },
       {
@@ -364,8 +386,11 @@
         "size": ["S", "M", "L"],
         "color": ["Gray"],
         "discount": 10,
-        "images": ["sweatshirt-gray1.jpg", "sweatshirt-gray2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/sweatshirt-crewneck.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Crewneck+Sweatshirt&bg=777777&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Crewneck+Sweatshirt+1",
+          "https://fallback.pics/api/v1/600x600?text=Crewneck+Sweatshirt+2"
+        ],
         "rating": 4.6
       },
       {
@@ -379,8 +404,11 @@
         "size": ["S", "M", "L"],
         "color": ["Blue"],
         "discount": 15,
-        "images": ["shorts-denim1.jpg", "shorts-denim2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/shorts-denim.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Denim+Shorts&bg=2a4b86&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Denim+Shorts+1",
+          "https://fallback.pics/api/v1/600x600?text=Denim+Shorts+2"
+        ],
         "rating": 4.7
       },
       {
@@ -394,10 +422,14 @@
         "size": ["S", "M", "L"],
         "color": ["Black"],
         "discount": 10,
-        "images": ["tshirt-black1.jpg", "tshirt-black2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/tshirt-black.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Black+Tshirt&bg=000000&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Black+Tshirt+1",
+          "https://fallback.pics/api/v1/600x600?text=Black+Tshirt+2"
+        ],
         "rating": 4.5
       },
+    
       {
         "id": 11,
         "title": "Blue Flower Print Crop Top",
@@ -409,10 +441,14 @@
         "size": ["S", "M", "L"],
         "color": ["Blue"],
         "discount": 15,
-        "images": ["crop-top-blue-flower1.jpg", "crop-top-blue-flower2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-blue-flower.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Flower+Crop+Top&bg=325ab3&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Flower+Crop+Top+1",
+          "https://fallback.pics/api/v1/600x600?text=Flower+Crop+Top+2"
+        ],
         "rating": 4.3
       },
+    
       {
         "id": 12,
         "title": "Black Crop Top",
@@ -424,10 +460,14 @@
         "size": ["S", "M", "L"],
         "color": ["Black"],
         "discount": 10,
-        "images": ["crop-top-black1.jpg", "crop-top-black2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/crop-top-black.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Black+Crop+Top&bg=111111&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Black+Crop+Top+1",
+          "https://fallback.pics/api/v1/600x600?text=Black+Crop+Top+2"
+        ],
         "rating": 4.2
       },
+    
       {
         "id": 13,
         "title": "Black T-Shirt",
@@ -435,14 +475,18 @@
         "category_id": 1,
         "type_id": 4,
         "brand": "Nike",
-        "price": 24.99,
-        "size": ["M", "L", "XL"],
+        "price": 27.99,
+        "size": ["M", "L", "S"],
         "color": ["Black"],
         "discount": 10,
-        "images": ["black-tshirt1.jpg", "black-tshirt2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/black-tshirt.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Men+Black+Tshirt&bg=000000&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Men+Black+Tshirt+1",
+          "https://fallback.pics/api/v1/600x600?text=Men+Black+Tshirt+2"
+        ],
         "rating": 4.5
       },
+    
       {
         "id": 14,
         "title": "White Hoodie",
@@ -454,10 +498,14 @@
         "size": ["M", "L", "XL"],
         "color": ["White"],
         "discount": 15,
-        "images": ["white-hoodie1.jpg", "white-hoodie2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/white-hoodie.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=White+Hoodie&bg=ffffff&fg=333333",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=White+Hoodie+1",
+          "https://fallback.pics/api/v1/600x600?text=White+Hoodie+2"
+        ],
         "rating": 4.7
       },
+    
       {
         "id": 15,
         "title": "Blue Jeans",
@@ -469,10 +517,14 @@
         "size": ["M", "L", "XL"],
         "color": ["Blue"],
         "discount": 20,
-        "images": ["blue-jeans1.jpg", "blue-jeans2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/blue-jeans.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Men+Blue+Jeans&bg=153a6b&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Men+Blue+Jeans+1",
+          "https://fallback.pics/api/v1/600x600?text=Men+Blue+Jeans+2"
+        ],
         "rating": 4.6
       },
+    
       {
         "id": 16,
         "title": "Gray Shorts",
@@ -484,10 +536,14 @@
         "size": ["M", "L", "XL"],
         "color": ["Gray"],
         "discount": 10,
-        "images": ["gray-shorts1.jpg", "gray-shorts2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/gray-shorts.jpg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Gray+Shorts&bg=666666&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Gray+Shorts+1",
+          "https://fallback.pics/api/v1/600x600?text=Gray+Shorts+2"
+        ],
         "rating": 4.4
       },
+    
       {
         "id": 17,
         "title": "Black Hoodie",
@@ -499,11 +555,14 @@
         "size": ["M", "L", "XL"],
         "color": ["Black"],
         "discount": 15,
-        "images": ["black-hoodie1.jpg", "black-hoodie2.jpg"],
-        "thumbnail": "https://codedev.b-cdn.net/products/black-hoodie.jpeg",
+        "thumbnail": "https://fallback.pics/api/v1/300x300?text=Black+Hoodie&bg=000000&fg=ffffff",
+        "images": [
+          "https://fallback.pics/api/v1/600x600?text=Black+Hoodie+1",
+          "https://fallback.pics/api/v1/600x600?text=Black+Hoodie+2"
+        ],
         "rating": 4.8
       }
-
     ]
+    
 
 }

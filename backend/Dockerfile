@@ -18,7 +18,7 @@ RUN ./mvnw package -DskipTests
 
 # --- Stage 2: The "Run" Stage ---
 # Use a minimal Java Runtime (JRE) image, which is smaller and more secure
-FROM eclipse-temurin:17-jre-alpine
+FROM maven:3.9-eclipse-temurin-17
 
 WORKDIR /app
 
