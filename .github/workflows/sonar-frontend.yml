@@ -26,6 +26,11 @@ jobs:
           cd frontend
           npm install
 
+      - name: Run tests and generate coverage
+        run: |
+          cd frontend
+          CI=true npm test -- --coverage --watchAll=false
+
       - name: Run SonarCloud Scan (frontend)
         uses: SonarSource/sonarcloud-github-action@v2
         with:
