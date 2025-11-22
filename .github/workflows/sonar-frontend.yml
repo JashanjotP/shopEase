@@ -2,7 +2,7 @@ name: SonarCloud - Frontend Scan
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -16,23 +16,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Set up Node.js (no cache)
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm ci
-
-      # Optional: run tests and generate coverage (uncomment if/when you add tests)
-      # - name: Run frontend tests and generate coverage
-      #   run: |
-      #     cd frontend
-      #     npm test -- --coverage
-      #     # ensure coverage/lcov.info exists at frontend/coverage/lcov.info
+          npm install
 
       - name: Run SonarCloud Scan (frontend)
         uses: SonarSource/sonarcloud-github-action@v2
