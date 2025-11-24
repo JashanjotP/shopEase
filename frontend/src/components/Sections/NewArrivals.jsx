@@ -31,11 +31,33 @@ const items = [{
     imagePath:require('../../assets/img/kurtis.jpg')
 }];
 
+// const NewArrivals = () => {
+//   return (
+//     <>
+//     <SectionHeading title={'New Arrivals'}/>
+//     <Carousel
+//         responsive={responsive}
+//         autoPlay={false}
+//         swipeable={true}
+//         draggable={false}
+//         showDots={false}
+//         infinite={false}
+//         partialVisible={false}
+//         itemClass={'react-slider-custom-item'}
+//         className='px-8'
+//       >
+//         {items && items?.map((item,index)=> <Card key={item?.title +index} title={item.title} imagePath={item.imagePath}/>)}
+
+//       </Carousel>
+//     </>
+//   )
+// }
+
 const NewArrivals = () => {
   return (
-    <>
-    <SectionHeading title={'New Arrivals'}/>
-    <Carousel
+    <div id="new-arrivals-section"> {/* <-- Add this ID */}
+      <SectionHeading title={'New Arrivals'} />
+      <Carousel
         responsive={responsive}
         autoPlay={false}
         swipeable={true}
@@ -46,11 +68,12 @@ const NewArrivals = () => {
         itemClass={'react-slider-custom-item'}
         className='px-8'
       >
-        {items && items?.map((item,index)=> <Card key={item?.title +index} title={item.title} imagePath={item.imagePath}/>)}
-
+        {items?.map((item, index) => (
+          <Card key={item?.title + index} title={item.title} imagePath={item.imagePath} />
+        ))}
       </Carousel>
-    </>
-  )
-}
+    </div>
+  );
+};
 
 export default NewArrivals
