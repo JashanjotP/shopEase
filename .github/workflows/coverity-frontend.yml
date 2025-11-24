@@ -10,7 +10,7 @@ jobs:
   coverity-scan:
     runs-on: ubuntu-latest
 
-    # run inside the frontend folder by default
+    # This defaults setting ONLY applies to "run" steps, not "uses" steps
     defaults:
       run:
         working-directory: frontend
@@ -26,24 +26,22 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          # Ensure this path is correct relative to root
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
+        # This inherits the working-directory: frontend
         run: |
           npm ci
 
-      # Build + Coverity capture + upload (vapier action does the heavy lifting)
+      # Build + Coverity capture + upload
       - name: Run Coverity Scan action (build & upload)
         uses: vapier/coverity-scan-action@v1
         with:
-          # leave project blank to default to the GitHub repo name (owner/repo),
-          # or set explicitly to the exact project name on scan.coverity.com (case-sensitive)
           project: 'ShopEase - Frontend' 
           token: ${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
-          build_language: 'javascript'    # javascript / nodejs
+          build_language: 'javascript' 
           build_platform: 'linux64'
-          # the command wrapped by cov-build; use the production build so bundler work gets captured
-          command: "npm run build"
-          # optional: increase timeout if your build is large (in minutes)
-          # timeout: 60
+          # FIX: Explicitly change directory before building
+          command: "cd frontend && npm run build"
