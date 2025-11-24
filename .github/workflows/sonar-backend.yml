@@ -1,4 +1,4 @@
-name: SonarCloud - Backend Scan (No Tests)
+name: Backend SonarCloud Scan
 
 on:
   push:
@@ -7,33 +7,31 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  sonar-backend:
+  sonar:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # required for Sonar
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
+          distribution: 'temurin'
+          cache: maven
 
-      - name: Build (skip tests)
-        working-directory: backend
-        run: mvn -B -DskipTests clean package
+      - name: Build the project (compile only)
+        run: mvn -B clean package -DskipTests
 
-      - name: SonarCloud Scan
-        working-directory: backend
+      - name: Install Sonar Scanner
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            sonar-scanner
+
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B sonar:sonar \
-            -Dsonar.login=${SONAR_TOKEN} \
-            -Dsonar.organization=jashanjotp \
-            -Dsonar.projectKey=jashanjotp_shopEase_backend \
-            -Dsonar.host.url=https://sonarcloud.io
