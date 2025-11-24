@@ -35,5 +35,5 @@ jobs:
           mvn -B sonar:sonar \
             -Dsonar.login=${SONAR_TOKEN} \
             -Dsonar.organization=jashanjotp \
-            -Dsonar.projectKey=jashanjotp_shopEase__backend \
+            -Dsonar.projectKey=jashanjotp_shopEase_backend \
             -Dsonar.host.url=https://sonarcloud.io
