@@ -22,7 +22,9 @@ jobs:
           cache: maven
 
       - name: Build the project (compile only)
-        run: mvn -B clean package -DskipTests
+        run: |
+          cd backend
+          mvn -B clean package -DskipTests
 
       - name: Run SonarCloud Scan (Backend)
         uses: SonarSource/sonarcloud-github-action@v2
