@@ -24,6 +24,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
+        # We still install dependencies so Coverity can analyze references in node_modules
         run: |
           npm ci
         working-directory: frontend
@@ -37,20 +38,14 @@ jobs:
           mkdir coverity-tool
           tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
           
+          # Add the 'bin' directory to the PATH so we can run 'coverity'
           echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
 
-      - name: Configure Coverity for JavaScript
+      - name: Run Coverity Capture
         run: |
-          # This registers the JavaScript/TypeScript compilers
-          cov-configure --javascript
-
-      - name: Build with Coverity
-        env:
-          CI: false # Prevents 'warnings as errors' from failing the build
-        run: |
-          # We wrap the actual build command. 
-          # Because we ran cov-configure above, it will now correctly capture the JS files.
-          cov-build --dir cov-int npm run build --prefix frontend
+          # FIX: Using the direct 'capture' command as per your instructions.
+          # We point --project-dir to 'frontend' so it scans that folder.
+          coverity capture --dir cov-int --project-dir frontend
 
       - name: Compress Results
         run: |
