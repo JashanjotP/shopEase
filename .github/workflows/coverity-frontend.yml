@@ -30,22 +30,17 @@ jobs:
 
       - name: Download and Install Coverity Tool
         run: |
-          # 1. Download the tool using the token
           wget -q https://scan.coverity.com/download/javascript/linux64 \
             --post-data "token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}&project=ShopEase+-+Frontend" \
             -O coverity_tool.tgz
-          
-          # 2. Extract it
           mkdir coverity-tool
           tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
-          
-          # 3. Add to PATH for this job
           echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
 
       - name: Build with Coverity
+        env:
+          CI: false  # <--- FIX ADDED HERE
         run: |
-          # Run cov-build using the --prefix flag to keep context in root
-          # This creates the 'cov-int' directory in the current root folder
           cov-build --dir cov-int npm run build --prefix frontend
 
       - name: Compress Results
@@ -54,10 +49,9 @@ jobs:
 
       - name: Upload to Coverity
         run: |
-          # Using the single-step upload (for builds < 500MB)
           curl --form token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }} \
             --form email=${{ secrets.COVERITY_SCAN_EMAIL }} \
             --form file=@shop-ease-frontend.tgz \
             --form version="${{ github.sha }}" \
             --form description="GitHub Actions Build" \
-            "https://scan.coverity.com/builds?project=ShopEase+-+Frontend"
+            "https://scan.coverity.com/projects/shopease-frontend"
