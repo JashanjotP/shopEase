@@ -1,0 +1,68 @@
+name: Coverity Scan - backend
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  coverity-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          # If your pom.xml is inside a 'backend' folder, specify path:
+          cache-dependency-path: backend/pom.xml
+
+      - name: Download and Install Coverity Tool (Java/Linux)
+        run: |
+          # Downloading the Java/Linux64 tool
+          # Note: We use the Backend Token and Project Name here
+          wget -q https://scan.coverity.com/download/java/linux64 \
+            --post-data "token=${{ secrets.COVERITY_SCAN_BACKEND_TOKEN }}&project=ShopEase+-+Backend" \
+            -O coverity_tool.tgz
+          
+          mkdir coverity-tool
+          tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
+          
+          # Add bin to path for subsequent steps
+          echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
+
+      - name: Configure Coverity for Java
+        run: |
+          # Crucial step to ensure 85%+ capture rate for Java
+          cov-configure --java
+
+      - name: Build with Coverity (Maven)
+        run: |
+          # We run cov-build wrapping the maven command.
+          # -DskipTests speeds up the build (tests aren't needed for static analysis)
+          cov-build --dir cov-int mvn clean compile -DskipTests
+        working-directory: backend
+
+      - name: Compress Results
+        run: |
+          # Compressing the 'cov-int' folder generated in the backend directory
+          tar czvf shop-ease-backend.tgz cov-int
+        working-directory: backend
+
+      - name: Upload to Coverity
+        run: |
+          # Uploading using the Backend Token and Project Name
+          curl --form token=${{ secrets.COVERITY_SCAN_BACKEND_TOKEN }} \
+            --form email=${{ secrets.COVERITY_SCAN_EMAIL }} \
+            --form file=@backend/shop-ease-backend.tgz \
+            --form version="${{ github.sha }}" \
+            --form description="GitHub Actions Backend Build" \
+            "https://scan.coverity.com/builds?project=ShopEase+-+Backend"
