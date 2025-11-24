@@ -32,7 +32,7 @@ jobs:
         with:
           # leave project blank to default to the GitHub repo name (owner/repo),
           # or set explicitly to the exact project name on scan.coverity.com (case-sensitive)
-          project: '' 
+          project: 'ShopEase - Frontend' 
           token: ${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}
           email: ${{ secrets.COVERITY_SCAN_EMAIL }}
           build_language: 'javascript'    # javascript / nodejs
