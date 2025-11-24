@@ -16,17 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: |
-          npm ci
-        working-directory: frontend
+      # Note: We don't strictly need 'npm ci' or 'npm run build' for Filesystem Capture 
+      # unless your code is generated dynamically. We scan the source files directly.
 
       - name: Download and Install Coverity Tool
         run: |
@@ -37,20 +28,18 @@ jobs:
           mkdir coverity-tool
           tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
           
-          # Add bin to path for the current and future steps
           echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
 
       - name: Configure Coverity for JavaScript
         run: |
-          # FIX: This tells Coverity to look for JS/TS code
-          cov-configure --comptype javascript --template
+          # FIX: Use the shorthand flag which is more reliable for this tool version
+          cov-configure --javascript
 
-      - name: Build with Coverity
-        env:
-          CI: false
+      - name: Run Coverity Capture (Filesystem Mode)
         run: |
-          # Build inside frontend, capture to cov-int
-          cov-build --dir cov-int npm run build --prefix frontend
+          # FIX: Use --fs-capture-search to scan files directly.
+          # We use --no-command because we don't need to run the compiler for JS.
+          cov-build --dir cov-int --no-command --fs-capture-search frontend
 
       - name: Compress Results
         run: |
