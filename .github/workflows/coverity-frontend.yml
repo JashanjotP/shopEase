@@ -10,11 +10,6 @@ jobs:
   coverity-scan:
     runs-on: ubuntu-latest
 
-    # This defaults setting ONLY applies to "run" steps, not "uses" steps
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,22 +21,43 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          # Ensure this path is correct relative to root
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        # This inherits the working-directory: frontend
         run: |
           npm ci
+        working-directory: frontend
 
-      # Build + Coverity capture + upload
-      - name: Run Coverity Scan action (build & upload)
-        uses: vapier/coverity-scan-action@v1
-        with:
-          project: 'ShopEase - Frontend' 
-          token: ${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}
-          email: ${{ secrets.COVERITY_SCAN_EMAIL }}
-          build_language: 'javascript' 
-          build_platform: 'linux64'
-          # FIX: Explicitly change directory before building
-          command: "npm run build --prefix frontend"
+      - name: Download and Install Coverity Tool
+        run: |
+          # 1. Download the tool using the token
+          wget -q https://scan.coverity.com/download/javascript/linux64 \
+            --post-data "token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}&project=ShopEase+-+Frontend" \
+            -O coverity_tool.tgz
+          
+          # 2. Extract it
+          mkdir coverity-tool
+          tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
+          
+          # 3. Add to PATH for this job
+          echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
+
+      - name: Build with Coverity
+        run: |
+          # Run cov-build using the --prefix flag to keep context in root
+          # This creates the 'cov-int' directory in the current root folder
+          cov-build --dir cov-int npm run build --prefix frontend
+
+      - name: Compress Results
+        run: |
+          tar czvf shop-ease-frontend.tgz cov-int
+
+      - name: Upload to Coverity
+        run: |
+          # Using the single-step upload (for builds < 500MB)
+          curl --form token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }} \
+            --form email=${{ secrets.COVERITY_SCAN_EMAIL }} \
+            --form file=@shop-ease-frontend.tgz \
+            --form version="${{ github.sha }}" \
+            --form description="GitHub Actions Build" \
+            "https://scan.coverity.com/builds?project=ShopEase+-+Frontend"
