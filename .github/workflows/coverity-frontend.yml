@@ -10,6 +10,11 @@ jobs:
   coverity-scan:
     runs-on: ubuntu-latest
 
+    # run inside the frontend folder by default
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,11 +25,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
         run: |
-          cd frontend
-          npm install
+          npm ci
 
       # Build + Coverity capture + upload (vapier action does the heavy lifting)
       - name: Run Coverity Scan action (build & upload)
@@ -38,6 +44,6 @@ jobs:
           build_language: 'javascript'    # javascript / nodejs
           build_platform: 'linux64'
           # the command wrapped by cov-build; use the production build so bundler work gets captured
-          command: "cd frontend && npm run build"
+          command: "npm run build"
           # optional: increase timeout if your build is large (in minutes)
           # timeout: 60
