@@ -1,4 +1,4 @@
-name: Backend SonarCloud Scan
+name: Backend SonarCloud Scan (Skips Tests)
 
 on:
   push:
@@ -9,9 +9,6 @@ on:
 jobs:
   sonar:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - name: Checkout code
@@ -27,11 +24,10 @@ jobs:
       - name: Build the project (compile only)
         run: mvn -B clean package -DskipTests
 
-      - name: Install Sonar Scanner
+      - name: Run SonarCloud Scan (Backend)
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          args: >
-            sonar-scanner
-
+          projectBaseDir: backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
