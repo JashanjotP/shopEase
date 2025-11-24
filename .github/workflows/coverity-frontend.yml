@@ -44,4 +44,4 @@ jobs:
           build_language: 'javascript' 
           build_platform: 'linux64'
           # FIX: Explicitly change directory before building
-          command: "cd frontend && npm run build"
+          command: "npm run build --prefix frontend"
