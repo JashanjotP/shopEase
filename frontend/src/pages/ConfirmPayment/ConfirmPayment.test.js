@@ -11,10 +11,7 @@ import { confirmPaymentAPI } from '../../api/order';
 // Mock Dependencies
 jest.mock('../../api/order');
 jest.unmock('../../store/features/common');
-jest.mock('../../store/actions/cartAction', () => ({
-	__esModule: true,
-	clearCart: jest.fn(() => ({ type: 'cart/clearCart' }))
-}));
+jest.unmock('../../store/actions/cartAction');
 jest.mock('../../components/Spinner/Spinner', () => () => <div data-testid="spinner">Spinner</div>);
 
 const middlewares = [thunk];
@@ -28,9 +25,6 @@ describe('ConfirmPayment Component', () => {
 			commonState: { loading: false }
 		});
 		confirmPaymentAPI.mockResolvedValue({ orderId: '123' });
-		const { clearCart } = require('../../store/actions/cartAction');
-		console.log('DEBUG: clearCart in test =', clearCart);
-		console.log('DEBUG: clearCart() result =', clearCart());
 	});
 
 	// Graph: Successful Payment

@@ -22,8 +22,18 @@ const AddAddress = ({ onCancel }) => {
         setError('');
         addAddressAPI(values).then(res => {
             console.log('DEBUG: addAddressAPI resolved', res);
-            dispatch(saveAddress(res));
-            onCancel && onCancel();
+            try {
+                dispatch(saveAddress(res));
+                console.log('DEBUG: dispatch saveAddress success');
+            } catch (e) {
+                console.error('DEBUG: dispatch saveAddress failed', e);
+            }
+            if (onCancel) {
+                console.log('DEBUG: calling onCancel');
+                onCancel();
+            } else {
+                console.log('DEBUG: onCancel is undefined');
+            }
         }).catch(err => {
             console.log('DEBUG: addAddressAPI rejected', err);
             setError('Address was not added.')
