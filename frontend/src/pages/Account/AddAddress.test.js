@@ -58,6 +58,7 @@ describe('AddAddress Component', () => {
 		fireEvent.click(screen.getByText('Save'));
 
 		await waitFor(() => {
+			console.log('DEBUG: Checking expectations');
 			expect(addAddressAPI).toHaveBeenCalled();
 			expect(mockOnCancel).toHaveBeenCalled();
 		});

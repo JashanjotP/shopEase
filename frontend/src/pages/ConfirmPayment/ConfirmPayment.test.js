@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { thunk } from 'redux-thunk';
-import { thunk } from 'redux-thunk';
+
 import ConfirmPayment from './ConfirmPayment';
 import { confirmPaymentAPI } from '../../api/order';
 
