@@ -1,0 +1,61 @@
+name: Coverity Scan - frontend
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  coverity-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        # We still install dependencies so Coverity can analyze references in node_modules
+        run: |
+          npm ci
+        working-directory: frontend
+
+      - name: Download and Install Coverity Tool
+        run: |
+          wget -q https://scan.coverity.com/download/javascript/linux64 \
+            --post-data "token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }}&project=ShopEase+-+Frontend" \
+            -O coverity_tool.tgz
+          
+          mkdir coverity-tool
+          tar xzf coverity_tool.tgz --strip 1 -C coverity-tool
+          
+          # Add the 'bin' directory to the PATH so we can run 'coverity'
+          echo "$(pwd)/coverity-tool/bin" >> $GITHUB_PATH
+
+      - name: Run Coverity Capture
+        run: |
+          # FIX: Using the direct 'capture' command as per your instructions.
+          # We point --project-dir to 'frontend' so it scans that folder.
+          coverity capture --dir cov-int --project-dir frontend
+
+      - name: Compress Results
+        run: |
+          tar czvf shop-ease-frontend.tgz cov-int
+
+      - name: Upload to Coverity
+        run: |
+          curl --form token=${{ secrets.COVERITY_SCAN_FRONTEND_TOKEN }} \
+            --form email=${{ secrets.COVERITY_SCAN_EMAIL }} \
+            --form file=@shop-ease-frontend.tgz \
+            --form version="${{ github.sha }}" \
+            --form description="GitHub Actions Build" \
+            "https://scan.coverity.com/builds?project=ShopEase+-+Frontend"
