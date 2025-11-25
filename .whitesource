@@ -1,25 +1,18 @@
 {
   "scanSettings": {
-    "baseBranches": [],
-    "resolveAllDependencies": false,
+    "baseBranches": ["master"],
+    "resolveAllDependencies": true,
     "npm.resolveDependencies": true,
     "maven.resolveDependencies": true,
-    "html.resolveDependencies": false,
-    "cocoapods.resolveDependencies": false,
-    "nuget.resolveDependencies": false,
-    "bower.resolveDependencies": false,
     "includes": [
-      "**/*.js",
-      "**/*.ts",
-      "**/*.json",
-      "**/*.java",
-      "**/*.xml",
-      "**/*.html"
+      "**/package.json",
+      "**/package-lock.json",
+      "**/pom.xml"
     ]
   },
   "checkRunSettings": {
     "vulnerableCheckRunConclusionLevel": "failure",
-    "displayMode": "baseline",
+    "displayMode": "diff",
     "useMendCheckNames": true
   },
   "issueSettings": {
