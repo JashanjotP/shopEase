@@ -11,47 +11,48 @@ const ConfirmPayment = () => {
 
     const location = useLocation();
     const dispatch = useDispatch();
-    const [errorMessage,setErrorMessage] = useState('');
-    const isLoading = useSelector((state)=> state?.commonState?.loading);
+    const [errorMessage, setErrorMessage] = useState('');
+    const isLoading = useSelector((state) => state?.commonState?.loading);
     const navigate = useNavigate();
-   
 
-    useEffect(()=>{
+
+    useEffect(() => {
 
         const query = new URLSearchParams(location.search);
         const clientSecret = query.get('payment_intent_client_secret');
         const redirectStatus = query.get('redirect_status');
         const paymentIntent = query.get('payment_intent');
-        if(redirectStatus === 'succeeded'){
+        if (redirectStatus === 'succeeded') {
             dispatch(setLoading(true));
             dispatch(clearCart());
             confirmPaymentAPI({
                 paymentIntent: paymentIntent,
-                status:paymentIntent
-            }).then(res=>{
+                status: paymentIntent
+            }).then(res => {
                 const orderId = res?.orderId;
                 navigate(`/orderConfirmed?orderId=${orderId}`)
-            }).catch(err=>{
+            }).catch(err => {
                 setErrorMessage("Something went wrong!");
-            }).finally(()=>{
+            }).finally(() => {
                 dispatch(setLoading(false));
             })
         }
 
-        else{
-            setErrorMessage('Payment Failed - '+redirectStatus)
+        else {
+            setErrorMessage('Payment Failed - ' + redirectStatus)
         }
 
-        
-    },[dispatch, location.search, navigate]);
 
-  
-  return (
-    <>
-    <div>Processing Payment...</div>
-    {isLoading && <Spinner />}
-    </>
-  )
+    }, [dispatch, location.search, navigate]);
+
+
+    return (
+        <>
+            <div>Processing Payment...</div>
+            {isLoading && <Spinner />}
+            {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+        </>
+    )
 }
 
 export default ConfirmPayment
