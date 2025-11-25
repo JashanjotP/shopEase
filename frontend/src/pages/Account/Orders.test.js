@@ -75,4 +75,36 @@ describe('Orders Component', () => {
 			expect(cancelOrderAPI).toHaveBeenCalledWith('1');
 		});
 	});
+	test('filters orders', async () => {
+		const mixedOrders = [
+			{ id: '1', orderDate: '2023-01-01', orderStatus: 'PENDING', totalAmount: 100, orderItemList: [] },
+			{ id: '2', orderDate: '2023-01-02', orderStatus: 'CANCELLED', totalAmount: 200, orderItemList: [] },
+			{ id: '3', orderDate: '2023-01-03', orderStatus: 'DELIVERED', totalAmount: 300, orderItemList: [] }
+		];
+		fetchOrderAPI.mockResolvedValue(mixedOrders);
+		store = mockStore({
+			user: { orders: mixedOrders }
+		});
+
+		render(
+			<Provider store={store}>
+				<Orders />
+			</Provider>
+		);
+
+		// Default is ACTIVE (PENDING)
+		expect(screen.getByText('Order no. #1')).toBeInTheDocument();
+		expect(screen.queryByText('Order no. #2')).not.toBeInTheDocument();
+		expect(screen.queryByText('Order no. #3')).not.toBeInTheDocument();
+
+		// Filter Cancelled
+		fireEvent.change(screen.getByRole('combobox'), { target: { value: 'CANCELLED' } });
+		expect(screen.queryByText('Order no. #1')).not.toBeInTheDocument();
+		expect(screen.getByText('Order no. #2')).toBeInTheDocument();
+
+		// Filter Completed
+		fireEvent.change(screen.getByRole('combobox'), { target: { value: 'COMPLETED' } });
+		expect(screen.queryByText('Order no. #2')).not.toBeInTheDocument();
+		expect(screen.getByText('Order no. #3')).toBeInTheDocument();
+	});
 });

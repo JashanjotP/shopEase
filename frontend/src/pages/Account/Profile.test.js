@@ -54,6 +54,21 @@ describe('Profile Component', () => {
 		expect(screen.getByText('123 St,City,State')).toBeInTheDocument();
 	});
 
+	test('renders None when phone number is missing', () => {
+		const userInfoNoPhone = { ...mockUserInfo, phoneNumber: null };
+		store = mockStore({
+			user: { userInfo: userInfoNoPhone }
+		});
+
+		render(
+			<Provider store={store}>
+				<Profile />
+			</Provider>
+		);
+
+		expect(screen.getByText('None')).toBeInTheDocument();
+	});
+
 	// Graph: Interaction
 	test('opens add address form', () => {
 		render(
