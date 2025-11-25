@@ -1,7 +1,6 @@
 {
   "scanSettings": {
     "baseBranches": [],
-    "configMode": "LOCAL",
     "resolveAllDependencies": false,
     "npm.resolveDependencies": true,
     "maven.resolveDependencies": true,
