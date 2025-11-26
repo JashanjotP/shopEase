@@ -27,6 +27,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "mutation": "npx stryker run",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -48,6 +49,8 @@
     ]
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^9.4.0",
+    "@stryker-mutator/jest-runner": "^9.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "jest": "^27.5.1",
