@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 public class ProductMapperTest {
 
@@ -149,5 +150,47 @@ public class ProductMapperTest {
         assertNotNull(dtos);
         assertEquals(1, dtos.size());
         assertEquals("http://image.com", dtos.get(0).getUrl());
+    }
+
+    @Test
+    void testMapToProductEntity_NullFields() {
+        ProductDto productDto = new ProductDto();
+        productDto.setName("Minimal Product");
+        productDto.setCategoryId(UUID.randomUUID());
+        // ID, Variants, Resources are null
+
+        when(categoryService.getCategory(any(UUID.class))).thenReturn(null);
+
+        Product product = productMapper.mapToProductEntity(productDto);
+
+        assertNotNull(product);
+        assertEquals("Minimal Product", product.getName());
+        assertNull(product.getId());
+        assertNull(product.getCategory());
+        assertNull(product.getProductVariants());
+        assertNull(product.getResources());
+    }
+
+    @Test
+    void testMapToProductEntity_CategoryTypeNotFound() {
+        UUID categoryId = UUID.randomUUID();
+        UUID categoryTypeId = UUID.randomUUID();
+
+        ProductDto productDto = new ProductDto();
+        productDto.setCategoryId(categoryId);
+        productDto.setCategoryTypeId(categoryTypeId);
+
+        Category category = new Category();
+        category.setId(categoryId);
+        // Empty category types list, so filter will find nothing
+        category.setCategoryTypes(new ArrayList<>());
+
+        when(categoryService.getCategory(categoryId)).thenReturn(category);
+
+        Product product = productMapper.mapToProductEntity(productDto);
+
+        assertNotNull(product);
+        assertEquals(category, product.getCategory());
+        assertNull(product.getCategoryType());
     }
 }
