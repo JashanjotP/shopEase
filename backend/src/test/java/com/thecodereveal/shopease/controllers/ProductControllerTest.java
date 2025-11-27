@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
 
@@ -46,6 +48,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Range", "0"))
                 .andExpect(jsonPath("$").isArray());
+        verify(productService).getAllProducts(null, null);
     }
 
     @Test
@@ -59,6 +62,7 @@ class ProductControllerTest {
                 .andExpect(header().string("Content-Range", "1"))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
+        verify(productService).getProductBySlug(slug);
     }
 
     @Test
@@ -69,6 +73,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get("/api/products/{id}", id))
                 .andExpect(status().isOk());
+        verify(productService).getProductById(id);
     }
 
     @Test
@@ -81,6 +86,7 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isCreated());
+        verify(productService).addProduct(any(ProductDto.class));
     }
 
     @Test
@@ -94,5 +100,6 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isOk());
+        verify(productService).updateProduct(any(ProductDto.class), eq(id));
     }
 }

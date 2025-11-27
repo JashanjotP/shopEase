@@ -10,6 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+
 @ExtendWith(MockitoExtension.class)
 class FileUploadServiceTest {
 
@@ -17,23 +24,23 @@ class FileUploadServiceTest {
     private FileUploadService fileUploadService;
 
     @Test
-    void uploadFile_Exception() {
+    void uploadFile_Exception() throws IOException {
         // Arrange
         ReflectionTestUtils.setField(fileUploadService, "storageZone", "test-zone");
         ReflectionTestUtils.setField(fileUploadService, "fileUploadKey", "test-key");
         ReflectionTestUtils.setField(fileUploadService, "fileHostName", "http://localhost");
 
         MultipartFile file = mock(MultipartFile.class);
-        // This will likely fail at new URL() or openConnection() or getInputStream()
-        // causing an exception which is caught and returns 500.
+        when(file.getSize()).thenReturn(100L);
+        // We can't easily mock the connection failure to happen AFTER getSize but BEFORE getInputStream
+        // But getSize is called before the try block that opens streams.
         
         // Act
         int result = fileUploadService.uploadFile(file, "test.jpg");
 
         // Assert
-        // It might return 500 or something else depending on where it fails.
-        // If new URL fails, it returns 500.
-        // If connection fails, it returns 500.
         assertEquals(500, result);
+        verify(file).getSize();
     }
+
 }

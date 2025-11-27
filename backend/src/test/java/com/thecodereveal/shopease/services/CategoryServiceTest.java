@@ -39,6 +39,7 @@ class CategoryServiceTest {
 
         assertNotNull(result);
         assertEquals(id, result.getId());
+        verify(categoryRepository).findById(id);
     }
 
     @Test
@@ -49,6 +50,7 @@ class CategoryServiceTest {
         Category result = categoryService.getCategory(id);
 
         assertNull(result);
+        verify(categoryRepository).findById(id);
     }
 
     @Test
@@ -61,18 +63,35 @@ class CategoryServiceTest {
         CategoryTypeDto typeDto = new CategoryTypeDto();
         typeDto.setName("Type 1");
         typeDto.setCode("T1");
+        typeDto.setDescription("Type Description");
         dto.setCategoryTypes(Collections.singletonList(typeDto));
 
         Category savedCategory = new Category();
         savedCategory.setId(UUID.randomUUID());
         savedCategory.setName("Test Category");
 
-        when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
+        when(categoryRepository.save(any(Category.class))).thenAnswer(invocation -> {
+            Category c = invocation.getArgument(0);
+            c.setId(savedCategory.getId());
+            return c;
+        });
 
         Category result = categoryService.createCategory(dto);
 
         assertNotNull(result);
         assertEquals(savedCategory.getId(), result.getId());
+        assertEquals("Test Category", result.getName());
+        assertEquals("TEST", result.getCode());
+        assertEquals("Test Description", result.getDescription());
+        
+        assertNotNull(result.getCategoryTypes());
+        assertEquals(1, result.getCategoryTypes().size());
+        CategoryType type = result.getCategoryTypes().get(0);
+        assertEquals("Type 1", type.getName());
+        assertEquals("T1", type.getCode());
+        assertEquals("Type Description", type.getDescription());
+        assertEquals(result, type.getCategory());
+        
         verify(categoryRepository).save(any(Category.class));
     }
 
@@ -106,6 +125,7 @@ class CategoryServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
+        verify(categoryRepository).findAll();
     }
 
     @Test
@@ -113,6 +133,8 @@ class CategoryServiceTest {
         UUID id = UUID.randomUUID();
         CategoryDto dto = new CategoryDto();
         dto.setName("Updated Name");
+        dto.setCode("UPDATED_CODE");
+        dto.setDescription("Updated Description");
         dto.setCategoryTypes(new ArrayList<>());
 
         Category existingCategory = new Category();
@@ -126,7 +148,10 @@ class CategoryServiceTest {
 
         assertNotNull(result);
         assertEquals("Updated Name", result.getName());
+        assertEquals("UPDATED_CODE", result.getCode());
+        assertEquals("Updated Description", result.getDescription());
         verify(categoryRepository).save(existingCategory);
+        verify(categoryRepository).findById(id);
     }
 
     @Test
@@ -160,10 +185,12 @@ class CategoryServiceTest {
         existingTypeDto.setId(typeId);
         existingTypeDto.setName("Updated Type");
         existingTypeDto.setCode("UT");
+        existingTypeDto.setDescription("Updated Desc");
         
         CategoryTypeDto newTypeDto = new CategoryTypeDto();
         newTypeDto.setName("New Type");
         newTypeDto.setCode("NT");
+        newTypeDto.setDescription("New Desc");
         
         dto.setCategoryTypes(Arrays.asList(existingTypeDto, newTypeDto));
 
@@ -174,6 +201,7 @@ class CategoryServiceTest {
         existingType.setId(typeId);
         existingType.setName("Old Type");
         existingType.setCode("OT");
+        existingType.setDescription("Old Desc");
         
         List<CategoryType> existingTypes = new ArrayList<>();
         existingTypes.add(existingType);
@@ -190,10 +218,15 @@ class CategoryServiceTest {
         CategoryType updatedType = result.getCategoryTypes().stream().filter(t -> t.getId() != null).findFirst().orElse(null);
         assertNotNull(updatedType);
         assertEquals("Updated Type", updatedType.getName());
+        assertEquals("UT", updatedType.getCode());
+        assertEquals("Updated Desc", updatedType.getDescription());
         
         CategoryType newType = result.getCategoryTypes().stream().filter(t -> t.getId() == null).findFirst().orElse(null);
         assertNotNull(newType);
         assertEquals("New Type", newType.getName());
+        assertEquals("NT", newType.getCode());
+        assertEquals("New Desc", newType.getDescription());
+        assertEquals(existingCategory, newType.getCategory());
     }
 
     @Test
@@ -287,5 +320,51 @@ class CategoryServiceTest {
         // The typeDto has an ID but it doesn't match any existing type.
         // So it should NOT be added to the list (because the code only adds if found).
         assertTrue(result.getCategoryTypes().isEmpty());
+    }
+
+    @Test
+    void updateCategory_MultipleExistingTypes() {
+        UUID id = UUID.randomUUID();
+        UUID typeId1 = UUID.randomUUID();
+        UUID typeId2 = UUID.randomUUID();
+
+        CategoryDto dto = new CategoryDto();
+        dto.setName("Updated Name");
+
+        CategoryTypeDto typeDto1 = new CategoryTypeDto();
+        typeDto1.setId(typeId1);
+        typeDto1.setName("Updated Type 1");
+        
+        // We only update type 1, type 2 is not in the DTO list, so it should be removed (or rather, the new list replaces the old one)
+        // Wait, the code replaces the list: category.setCategoryTypes(list);
+        // So if type 2 is not in DTO, it's gone.
+        
+        dto.setCategoryTypes(Collections.singletonList(typeDto1));
+
+        Category existingCategory = new Category();
+        existingCategory.setId(id);
+
+        CategoryType existingType1 = new CategoryType();
+        existingType1.setId(typeId1);
+        existingType1.setName("Old Type 1");
+
+        CategoryType existingType2 = new CategoryType();
+        existingType2.setId(typeId2);
+        existingType2.setName("Old Type 2");
+
+        List<CategoryType> existingTypes = new ArrayList<>();
+        existingTypes.add(existingType1);
+        existingTypes.add(existingType2);
+        existingCategory.setCategoryTypes(existingTypes);
+
+        when(categoryRepository.findById(id)).thenReturn(Optional.of(existingCategory));
+        when(categoryRepository.save(any(Category.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Category result = categoryService.updateCategory(dto, id);
+
+        assertNotNull(result);
+        assertEquals(1, result.getCategoryTypes().size());
+        assertEquals("Updated Type 1", result.getCategoryTypes().get(0).getName());
+        assertEquals(typeId1, result.getCategoryTypes().get(0).getId());
     }
 }

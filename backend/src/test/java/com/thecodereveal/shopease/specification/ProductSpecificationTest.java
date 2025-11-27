@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ProductSpecificationTest {
@@ -21,13 +22,16 @@ public class ProductSpecificationTest {
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
         Path categoryPath = mock(Path.class);
         Path idPath = mock(Path.class);
+        Predicate expectedPredicate = mock(Predicate.class);
 
         when(root.get("category")).thenReturn(categoryPath);
         when(categoryPath.get("id")).thenReturn(idPath);
+        when(criteriaBuilder.equal(idPath, categoryId)).thenReturn(expectedPredicate);
         
-        spec.toPredicate(root, query, criteriaBuilder);
+        Predicate result = spec.toPredicate(root, query, criteriaBuilder);
 
         verify(criteriaBuilder).equal(idPath, categoryId);
+        assertEquals(expectedPredicate, result);
     }
 
     @Test
@@ -40,12 +44,15 @@ public class ProductSpecificationTest {
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
         Path categoryTypePath = mock(Path.class);
         Path idPath = mock(Path.class);
+        Predicate expectedPredicate = mock(Predicate.class);
 
         when(root.get("categoryType")).thenReturn(categoryTypePath);
         when(categoryTypePath.get("id")).thenReturn(idPath);
+        when(criteriaBuilder.equal(idPath, typeId)).thenReturn(expectedPredicate);
 
-        spec.toPredicate(root, query, criteriaBuilder);
+        Predicate result = spec.toPredicate(root, query, criteriaBuilder);
 
         verify(criteriaBuilder).equal(idPath, typeId);
+        assertEquals(expectedPredicate, result);
     }
 }

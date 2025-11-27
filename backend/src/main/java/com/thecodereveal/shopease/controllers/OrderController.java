@@ -35,8 +35,6 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, Principal principal) throws Exception {
         OrderResponse orderResponse = orderService.createOrder(orderRequest,principal);
-            //return new ResponseEntity<>(order, HttpStatus.CREATED);
-
         return new ResponseEntity<>(orderResponse,HttpStatus.OK);
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorityServiceTest {
@@ -34,6 +35,7 @@ class AuthorityServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("USER", result.get(0).getRoleCode());
+        verify(authorityRepository).findByRoleCode("USER");
     }
 
     @Test
@@ -50,5 +52,6 @@ class AuthorityServiceTest {
 
         assertNotNull(result);
         assertEquals(role, result.getRoleCode());
+        verify(authorityRepository).save(any(Authority.class));
     }
 }

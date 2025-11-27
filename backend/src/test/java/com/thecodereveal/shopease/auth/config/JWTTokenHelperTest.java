@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.mockito.Mockito.verify;
+
 public class JWTTokenHelperTest {
 
     @InjectMocks
@@ -52,6 +54,7 @@ public class JWTTokenHelperTest {
         when(request.getHeader("Authorization")).thenReturn("Bearer test-token");
         String token = jwtTokenHelper.getToken(request);
         assertEquals("test-token", token);
+        verify(request).getHeader("Authorization");
     }
 
     @Test
@@ -59,6 +62,7 @@ public class JWTTokenHelperTest {
         when(request.getHeader("Authorization")).thenReturn("test-token");
         String token = jwtTokenHelper.getToken(request);
         assertEquals("test-token", token);
+        verify(request).getHeader("Authorization");
     }
 
     @Test
@@ -66,6 +70,7 @@ public class JWTTokenHelperTest {
         when(request.getHeader("Authorization")).thenReturn(null);
         String token = jwtTokenHelper.getToken(request);
         assertNull(token);
+        verify(request).getHeader("Authorization");
     }
 
     @Test

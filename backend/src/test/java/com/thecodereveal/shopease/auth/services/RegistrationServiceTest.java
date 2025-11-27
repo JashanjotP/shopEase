@@ -11,12 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import org.mockito.ArgumentCaptor;
+import java.util.List;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegistrationServiceTest {
@@ -54,6 +54,22 @@ class RegistrationServiceTest {
 
         assertEquals(200, response.getCode());
         assertEquals("User created!", response.getMessage());
+        
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userDetailRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+        
+        assertEquals(request.getFirstName(), savedUser.getFirstName());
+        assertEquals(request.getLastName(), savedUser.getLastName());
+        assertEquals(request.getEmail(), savedUser.getEmail());
+        assertFalse(savedUser.isEnabled());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals("manual", savedUser.getProvider());
+        assertNotNull(savedUser.getVerificationCode());
+        assertNotNull(savedUser.getAuthorities());
+        
+        verify(emailService).sendMail(savedUser);
+        verify(passwordEncoder).encode("password");
     }
 
     @Test
@@ -67,6 +83,7 @@ class RegistrationServiceTest {
 
         assertEquals(400, response.getCode());
         assertEquals("Email already exist!", response.getMessage());
+        verify(userDetailRepository, never()).save(any(User.class));
     }
 
     @Test
@@ -82,5 +99,6 @@ class RegistrationServiceTest {
         registrationService.verifyUser(username);
 
         assertEquals(true, user.isEnabled());
+        verify(userDetailRepository).save(user);
     }
 }

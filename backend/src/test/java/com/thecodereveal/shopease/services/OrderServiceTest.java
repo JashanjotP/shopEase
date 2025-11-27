@@ -50,7 +50,10 @@ class OrderServiceTest {
         request.setAddressId(UUID.randomUUID());
         request.setTotalAmount(100.0);
         request.setPaymentMethod("CARD");
-        request.setOrderItemRequests(Collections.singletonList(new OrderItemRequest()));
+        OrderItemRequest itemRequest = new OrderItemRequest();
+        itemRequest.setProductId(UUID.randomUUID());
+        itemRequest.setQuantity(2);
+        request.setOrderItemRequests(Collections.singletonList(itemRequest));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testuser");
@@ -62,6 +65,8 @@ class OrderServiceTest {
         when(userDetailsService.loadUserByUsername("testuser")).thenReturn(user);
 
         Product product = new Product();
+        product.setId(itemRequest.getProductId());
+        product.setPrice(java.math.BigDecimal.valueOf(50.0));
         when(productService.fetchProductById(any())).thenReturn(product);
 
         Order savedOrder = new Order();
@@ -78,7 +83,26 @@ class OrderServiceTest {
         // Assert
         assertNotNull(response);
         assertEquals(savedOrder.getId(), response.getOrderId());
-        verify(orderRepository).save(any(Order.class));
+        
+        org.mockito.ArgumentCaptor<Order> orderCaptor = org.mockito.ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(orderCaptor.capture());
+        Order capturedOrder = orderCaptor.getValue();
+        
+        assertNotNull(capturedOrder.getOrderItemList());
+        assertEquals(1, capturedOrder.getOrderItemList().size());
+        assertEquals(product, capturedOrder.getOrderItemList().get(0).getProduct());
+        assertEquals(2, capturedOrder.getOrderItemList().get(0).getQuantity());
+        assertEquals(request.getTotalAmount(), capturedOrder.getTotalAmount());
+        assertEquals(request.getPaymentMethod(), capturedOrder.getPaymentMethod());
+        
+        assertNotNull(capturedOrder.getPayment());
+        assertEquals(PaymentStatus.PENDING, capturedOrder.getPayment().getPaymentStatus());
+        assertEquals(request.getTotalAmount(), capturedOrder.getPayment().getAmount());
+        assertEquals(request.getPaymentMethod(), capturedOrder.getPayment().getPaymentMethod());
+        
+        verify(paymentIntentService).createPaymentIntent(any(Order.class));
+        verify(productService).fetchProductById(any());
+        verify(userDetailsService).loadUserByUsername("testuser");
     }
 
     @Test
@@ -96,6 +120,8 @@ class OrderServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
+        verify(orderRepository).findByUser(user);
+        verify(userDetailsService).loadUserByUsername(username);
     }
 
     @Test
@@ -116,6 +142,7 @@ class OrderServiceTest {
 
         assertEquals(OrderStatus.CANCELLED, order.getOrderStatus());
         verify(orderRepository).save(order);
+        verify(orderRepository).findById(orderId);
     }
     
     @Test
@@ -148,6 +175,14 @@ class OrderServiceTest {
             assertNotNull(result);
             assertEquals(orderId.toString(), result.get("orderId"));
             assertEquals(OrderStatus.IN_PROGRESS, order.getOrderStatus());
+            
+            org.mockito.ArgumentCaptor<Order> orderCaptor = org.mockito.ArgumentCaptor.forClass(Order.class);
+            verify(orderRepository).save(orderCaptor.capture());
+            Order capturedOrder = orderCaptor.getValue();
+            
+            assertNotNull(capturedOrder.getPayment());
+            assertEquals(PaymentStatus.COMPLETED, capturedOrder.getPayment().getPaymentStatus());
+            assertEquals("card", capturedOrder.getPayment().getPaymentMethod());
         }
     }
 
