@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OAuth2ServiceTest {
@@ -40,6 +41,7 @@ class OAuth2ServiceTest {
 
         assertNotNull(result);
         assertEquals(username, result.getEmail());
+        verify(userDetailRepository).findByEmail(username);
     }
 
     @Test
@@ -59,5 +61,6 @@ class OAuth2ServiceTest {
 
         assertNotNull(result);
         assertEquals("john.doe@example.com", result.getEmail());
+        verify(userDetailRepository).save(any(User.class));
     }
 }

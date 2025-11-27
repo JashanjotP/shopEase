@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class PaymentIntentServiceTest {
 
@@ -46,6 +48,7 @@ class PaymentIntentServiceTest {
 
             assertNotNull(result);
             assertEquals("secret_123", result.get("client_secret"));
+            mockedPaymentIntent.verify(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class)));
         }
     }
 }

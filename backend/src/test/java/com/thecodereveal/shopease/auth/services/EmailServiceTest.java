@@ -15,6 +15,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
 
@@ -36,6 +38,7 @@ class EmailServiceTest {
         String result = emailService.sendMail(user);
 
         assertEquals("Email sent", result);
+        verify(javaMailSender).send(any(SimpleMailMessage.class));
     }
 
     @Test
@@ -49,5 +52,6 @@ class EmailServiceTest {
         String result = emailService.sendMail(user);
 
         assertEquals("Error while Sending Mail", result);
+        verify(javaMailSender).send(any(SimpleMailMessage.class));
     }
 }

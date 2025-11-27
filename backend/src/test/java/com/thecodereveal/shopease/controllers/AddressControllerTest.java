@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import static org.mockito.Mockito.verify;
+
 public class AddressControllerTest {
 
     private MockMvc mockMvc;
@@ -59,6 +61,8 @@ public class AddressControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.city").value("New York"));
+        
+        verify(addressService).createAddress(any(AddressRequest.class), any(Principal.class));
     }
 
     @Test
@@ -69,5 +73,7 @@ public class AddressControllerTest {
 
         mockMvc.perform(delete("/api/address/" + id))
                 .andExpect(status().isOk());
+        
+        verify(addressService).deleteAddress(id);
     }
 }

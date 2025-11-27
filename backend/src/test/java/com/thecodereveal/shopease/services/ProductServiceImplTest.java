@@ -141,26 +141,47 @@ class ProductServiceImplTest {
     void getProductBySlug_Found() {
         // Arrange
         String slug = "test-product";
+        UUID categoryId = UUID.randomUUID();
+        UUID typeId = UUID.randomUUID();
+        
         Product product = new Product();
         product.setId(UUID.randomUUID());
         Category category = new Category();
-        category.setId(UUID.randomUUID());
+        category.setId(categoryId);
         product.setCategory(category);
         CategoryType categoryType = new CategoryType();
-        categoryType.setId(UUID.randomUUID());
+        categoryType.setId(typeId);
         product.setCategoryType(categoryType);
         
+        // Setup lists for variants and resources
+        List<com.thecodereveal.shopease.entities.ProductVariant> variants = Collections.emptyList();
+        product.setProductVariants(variants);
+        List<com.thecodereveal.shopease.entities.Resources> resources = Collections.emptyList();
+        product.setResources(resources);
+        
         ProductDto productDto = new ProductDto();
+        productDto.setName("Test Product");
+        
+        List<com.thecodereveal.shopease.dto.ProductVariantDto> variantDtos = Collections.emptyList();
+        List<com.thecodereveal.shopease.dto.ProductResourceDto> resourceDtos = Collections.emptyList();
 
         when(productRepository.findBySlug(slug)).thenReturn(product);
         when(productMapper.mapProductToDto(product)).thenReturn(productDto);
+        when(productMapper.mapProductVariantListToDto(variants)).thenReturn(variantDtos);
+        when(productMapper.mapProductResourcesListDto(resources)).thenReturn(resourceDtos);
 
         // Act
         ProductDto result = productService.getProductBySlug(slug);
 
         // Assert
         assertNotNull(result);
+        assertEquals("Test Product", result.getName());
         verify(productRepository).findBySlug(slug);
+        
+        assertEquals(categoryId, result.getCategoryId());
+        assertEquals(typeId, result.getCategoryTypeId());
+        assertEquals(variantDtos, result.getVariants());
+        assertEquals(resourceDtos, result.getProductResources());
     }
 
     @Test
@@ -195,19 +216,33 @@ class ProductServiceImplTest {
     void getProductById_Found() {
         // Arrange
         UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+        UUID typeId = UUID.randomUUID();
+        
         Product product = new Product();
         product.setId(id);
         Category category = new Category();
-        category.setId(UUID.randomUUID());
+        category.setId(categoryId);
         product.setCategory(category);
         CategoryType categoryType = new CategoryType();
-        categoryType.setId(UUID.randomUUID());
+        categoryType.setId(typeId);
         product.setCategoryType(categoryType);
+        
+        // Setup lists for variants and resources
+        List<com.thecodereveal.shopease.entities.ProductVariant> variants = Collections.emptyList();
+        product.setProductVariants(variants);
+        List<com.thecodereveal.shopease.entities.Resources> resources = Collections.emptyList();
+        product.setResources(resources);
 
         ProductDto productDto = new ProductDto();
+        
+        List<com.thecodereveal.shopease.dto.ProductVariantDto> variantDtos = Collections.emptyList();
+        List<com.thecodereveal.shopease.dto.ProductResourceDto> resourceDtos = Collections.emptyList();
 
         when(productRepository.findById(id)).thenReturn(java.util.Optional.of(product));
         when(productMapper.mapProductToDto(product)).thenReturn(productDto);
+        when(productMapper.mapProductVariantListToDto(variants)).thenReturn(variantDtos);
+        when(productMapper.mapProductResourcesListDto(resources)).thenReturn(resourceDtos);
 
         // Act
         ProductDto result = productService.getProductById(id);
@@ -215,6 +250,10 @@ class ProductServiceImplTest {
         // Assert
         assertNotNull(result);
         verify(productRepository).findById(id);
+        assertEquals(categoryId, result.getCategoryId());
+        assertEquals(typeId, result.getCategoryTypeId());
+        assertEquals(variantDtos, result.getVariants());
+        assertEquals(resourceDtos, result.getProductResources());
     }
 
     @Test

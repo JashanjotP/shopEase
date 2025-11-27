@@ -22,6 +22,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.mockito.Mockito.verify;
+
 public class OAuth2ControllerTest {
 
     private MockMvc mockMvc;
@@ -68,6 +70,8 @@ public class OAuth2ControllerTest {
         oAuth2Controller.callbackOAuth2(oAuth2User, response);
         
         verify(response).sendRedirect("http://localhost:3000/oauth2/callback?token=test-token");
+        verify(oAuth2Service).getUser("test@example.com");
+        verify(jwtTokenHelper).generateToken("test@example.com");
     }
 
     @Test
@@ -87,5 +91,8 @@ public class OAuth2ControllerTest {
         oAuth2Controller.callbackOAuth2(oAuth2User, response);
 
         verify(response).sendRedirect("http://localhost:3000/oauth2/callback?token=new-token");
+        verify(oAuth2Service).getUser("new@example.com");
+        verify(oAuth2Service).createUser(eq(oAuth2User), eq("google"));
+        verify(jwtTokenHelper).generateToken("new@example.com");
     }
 }

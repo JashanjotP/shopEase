@@ -21,6 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import static org.mockito.Mockito.verify;
+
 public class UserDetailControllerTest {
 
     private MockMvc mockMvc;
@@ -58,6 +60,8 @@ public class UserDetailControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.email").value("john.doe@example.com"));
+        
+        verify(userDetailsService).loadUserByUsername("john.doe@example.com");
     }
 
     @Test
@@ -67,5 +71,7 @@ public class UserDetailControllerTest {
         mockMvc.perform(get("/api/user/profile")
                 .principal(() -> "john.doe@example.com"))
                 .andExpect(status().isUnauthorized());
+        
+        verify(userDetailsService).loadUserByUsername("john.doe@example.com");
     }
 }

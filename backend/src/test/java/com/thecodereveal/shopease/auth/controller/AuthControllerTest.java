@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import static org.mockito.Mockito.verify;
+
 public class AuthControllerTest {
 
     private MockMvc mockMvc;
@@ -82,6 +84,9 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("test-token"));
+        
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtTokenHelper).generateToken("test@example.com");
     }
 
     @Test
@@ -97,6 +102,8 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
+        
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     }
 
     @Test
@@ -120,6 +127,8 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
+        
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     }
 
     @Test
@@ -138,6 +147,8 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200));
+        
+        verify(registrationService).createUser(any(RegistrationRequest.class));
     }
 
     @Test
@@ -156,6 +167,8 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
+        
+        verify(registrationService).createUser(any(RegistrationRequest.class));
     }
 
     @Test
@@ -173,6 +186,9 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
+        
+        verify(userDetailsService).loadUserByUsername("test@example.com");
+        verify(registrationService).verifyUser("test@example.com");
     }
 
     @Test
@@ -190,5 +206,7 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+        
+        verify(userDetailsService).loadUserByUsername("test@example.com");
     }
 }

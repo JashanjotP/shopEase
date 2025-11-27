@@ -49,7 +49,9 @@ class AddressServiceTest {
         Address result = addressService.createAddress(request, principal);
 
         assertNotNull(result);
+        assertEquals(savedAddress.getId(), result.getId());
         verify(addressRepository).save(any(Address.class));
+        verify(userDetailsService).loadUserByUsername("testuser");
     }
 
     @Test

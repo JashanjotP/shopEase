@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class CustomUserDetailServiceTest {
 
@@ -33,6 +35,7 @@ class CustomUserDetailServiceTest {
 
         assertNotNull(result);
         assertEquals(username, ((User) result).getEmail());
+        verify(userDetailRepository).findByEmail(username);
     }
 
     @Test
@@ -41,5 +44,6 @@ class CustomUserDetailServiceTest {
         when(userDetailRepository.findByEmail(username)).thenReturn(null);
 
         assertThrows(UsernameNotFoundException.class, () -> customUserDetailService.loadUserByUsername(username));
+        verify(userDetailRepository).findByEmail(username);
     }
 }
