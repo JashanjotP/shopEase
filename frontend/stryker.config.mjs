@@ -15,7 +15,7 @@ const config = {
   reporters: ["progress", "clear-text", "html"],
   coverageAnalysis: "perTest",      // much faster than perTest
   ignoreStatic: true,          // skip expensive static mutants (recommended)
-  concurrency: 4, // tune to CI runner cores/memory (reduce if OOM)
+  concurrency: 3,
   jest: {
     projectType: "create-react-app",
   },

@@ -18,11 +18,10 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
@@ -65,14 +64,20 @@ class ProductControllerTest {
         verify(productService).getProductBySlug(slug);
     }
 
+    // FIX 1: Kills Mutation on getProductById (Replaced return value with null)
     @Test
     void getProductById_Success() throws Exception {
         UUID id = UUID.randomUUID();
         ProductDto productDto = new ProductDto();
+        productDto.setId(id); // Ensure the DTO has the ID set
+
         when(productService.getProductById(id)).thenReturn(productDto);
 
         mockMvc.perform(get("/api/products/{id}", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                // Asserting content exists ensures return value was NOT null
+                .andExpect(jsonPath("$.id").value(id.toString())); 
+        
         verify(productService).getProductById(id);
     }
 
@@ -89,17 +94,22 @@ class ProductControllerTest {
         verify(productService).addProduct(any(ProductDto.class));
     }
 
+    // FIX 2: Kills Mutation on updateProduct (Replaced return value with null)
     @Test
     void updateProduct_Success() throws Exception {
         UUID id = UUID.randomUUID();
         Product product = new Product();
-        product.setId(id);
+        product.setId(id); // Ensure the entity has the ID set
+
         when(productService.updateProduct(any(ProductDto.class), eq(id))).thenReturn(product);
 
         mockMvc.perform(put("/api/products/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                // Asserting content exists ensures return value was NOT null
+                .andExpect(jsonPath("$.id").value(id.toString())); 
+
         verify(productService).updateProduct(any(ProductDto.class), eq(id));
     }
 }
