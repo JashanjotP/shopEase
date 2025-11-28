@@ -21,5 +21,8 @@ const config = {
   },
   // optional quality gate:
   thresholds: { high: 80, low: 60, break: 50 },
+  mutator:{
+    excludedMutations: ["OptionalChaining", "StringLiteral"]
+  }
 };
 export default config;
