@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.controllers</a> &gt; <span class="el_source">CategoryController.java</span></div><h1>CategoryController.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.controllers;
+
+import com.thecodereveal.shopease.dto.CategoryDto;
+import com.thecodereveal.shopease.entities.Category;
+import com.thecodereveal.shopease.services.CategoryService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/api/category&quot;)
+@CrossOrigin
+<span class="fc" id="L18">public class CategoryController {</span>
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Category&gt; getCategoryById(@PathVariable(value = &quot;id&quot;,required = true) UUID categoryId){
+<span class="fc" id="L25">        Category category = categoryService.getCategory(categoryId);</span>
+<span class="fc" id="L26">        return new ResponseEntity&lt;&gt;(category, HttpStatus.OK);</span>
+
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Category&gt;&gt; getAllCategories(HttpServletResponse response){
+<span class="fc" id="L32">        List&lt;Category&gt; categoryList = categoryService.getAllCategory();</span>
+<span class="fc" id="L33">        response.setHeader(&quot;Content-Range&quot;,String.valueOf(categoryList.size()));</span>
+<span class="fc" id="L34">        return new ResponseEntity&lt;&gt;(categoryList, HttpStatus.OK);</span>
+
+    }
+
+
+
+    @PostMapping
+    public ResponseEntity&lt;Category&gt; createCategory(@RequestBody CategoryDto categoryDto){
+<span class="fc" id="L42">        Category category = categoryService.createCategory(categoryDto);</span>
+<span class="fc" id="L43">        return new ResponseEntity&lt;&gt;(category, HttpStatus.CREATED);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Category&gt; updateCategory(@RequestBody CategoryDto categoryDto, @PathVariable(value = &quot;id&quot;,required = true) UUID categoryId){
+<span class="fc" id="L48">        Category updatedCategory = categoryService.updateCategory(categoryDto,categoryId);</span>
+<span class="fc" id="L49">        return new ResponseEntity&lt;&gt;(updatedCategory, HttpStatus.OK);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteCategory(@PathVariable(value = &quot;id&quot;,required = true) UUID categoryId){
+<span class="fc" id="L54">        categoryService.deleteCategory(categoryId);</span>
+<span class="fc" id="L55">        return ResponseEntity.ok().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

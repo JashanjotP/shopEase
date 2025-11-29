@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.auth.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.auth.controller;
+
+import com.thecodereveal.shopease.auth.config.JWTTokenHelper;
+import com.thecodereveal.shopease.auth.dto.LoginRequest;
+import com.thecodereveal.shopease.auth.dto.RegistrationRequest;
+import com.thecodereveal.shopease.auth.dto.RegistrationResponse;
+import com.thecodereveal.shopease.auth.dto.UserToken;
+import com.thecodereveal.shopease.auth.entities.User;
+import com.thecodereveal.shopease.auth.services.RegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@CrossOrigin
+@RequestMapping(&quot;/api/auth&quot;)
+<span class="fc" id="L25">public class AuthController {</span>
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    RegistrationService registrationService;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    JWTTokenHelper jwtTokenHelper;
+
+
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;UserToken&gt; login(@RequestBody LoginRequest loginRequest){
+        try{
+<span class="fc" id="L43">            Authentication authentication= UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.getUserName(),</span>
+<span class="fc" id="L44">                    loginRequest.getPassword());</span>
+
+<span class="fc" id="L46">            Authentication authenticationResponse = this.authenticationManager.authenticate(authentication);</span>
+
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if(authenticationResponse.isAuthenticated()){</span>
+<span class="fc" id="L49">                User user= (User) authenticationResponse.getPrincipal();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                if(!user.isEnabled()) {</span>
+<span class="fc" id="L51">                    return new ResponseEntity&lt;&gt;(HttpStatus.UNAUTHORIZED);</span>
+                }
+
+<span class="fc" id="L54">                String token =jwtTokenHelper.generateToken(user.getEmail());</span>
+<span class="fc" id="L55">                UserToken userToken= UserToken.builder().token(token).build();</span>
+<span class="fc" id="L56">                return new ResponseEntity&lt;&gt;(userToken,HttpStatus.OK);</span>
+            }
+
+<span class="fc" id="L59">        } catch (BadCredentialsException e) {</span>
+<span class="fc" id="L60">            return new ResponseEntity&lt;&gt;(HttpStatus.UNAUTHORIZED);</span>
+<span class="nc" id="L61">        }</span>
+
+<span class="nc" id="L63">        return new ResponseEntity&lt;&gt;(HttpStatus.UNAUTHORIZED);</span>
+    }
+
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;RegistrationResponse&gt; register(@RequestBody RegistrationRequest request){
+<span class="fc" id="L68">        RegistrationResponse registrationResponse = registrationService.createUser(request);</span>
+
+<span class="fc" id="L70">        return new ResponseEntity&lt;&gt;(registrationResponse,</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">                registrationResponse.getCode() == 200 ? HttpStatus.OK: HttpStatus.BAD_REQUEST);</span>
+    }
+
+    @PostMapping(&quot;/verify&quot;)
+    public ResponseEntity&lt;?&gt; verifyCode(@RequestBody Map&lt;String,String&gt; map){
+<span class="fc" id="L76">        String userName = map.get(&quot;userName&quot;);</span>
+<span class="fc" id="L77">        String code = map.get(&quot;code&quot;);</span>
+
+<span class="fc" id="L79">        User user= (User) userDetailsService.loadUserByUsername(userName);</span>
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">        if(null != user &amp;&amp; user.getVerificationCode().equals(code)){</span>
+<span class="fc" id="L81">            registrationService.verifyUser(userName);</span>
+<span class="fc" id="L82">            return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
+        }
+<span class="fc" id="L84">        return new ResponseEntity&lt;&gt;(HttpStatus.BAD_REQUEST);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

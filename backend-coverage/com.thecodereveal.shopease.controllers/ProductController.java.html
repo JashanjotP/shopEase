@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.controllers</a> &gt; <span class="el_source">ProductController.java</span></div><h1>ProductController.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.controllers;
+
+import com.thecodereveal.shopease.dto.ProductDto;
+import com.thecodereveal.shopease.entities.Product;
+import com.thecodereveal.shopease.services.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/api/products&quot;)
+@CrossOrigin
+public class ProductController {
+
+    private ProductService productService;
+
+    @Autowired
+<span class="fc" id="L25">    public ProductController(ProductService productService){</span>
+<span class="fc" id="L26">        this.productService = productService;</span>
+<span class="fc" id="L27">    }</span>
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;ProductDto&gt;&gt; getAllProducts(@RequestParam(required = false,name = &quot;categoryId&quot;,value = &quot;categoryId&quot;) UUID categoryId, @RequestParam(required = false,name = &quot;typeId&quot;,value = &quot;typeId&quot;) UUID typeId, @RequestParam(required = false) String slug, HttpServletResponse response){
+<span class="fc" id="L31">        List&lt;ProductDto&gt; productList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if(StringUtils.isNotBlank(slug)){</span>
+<span class="fc" id="L33">            ProductDto productDto = productService.getProductBySlug(slug);</span>
+<span class="fc" id="L34">            productList.add(productDto);</span>
+<span class="fc" id="L35">        }</span>
+        else {
+<span class="fc" id="L37">            productList = productService.getAllProducts(categoryId, typeId);</span>
+        }
+<span class="fc" id="L39">        response.setHeader(&quot;Content-Range&quot;,String.valueOf(productList.size()));</span>
+<span class="fc" id="L40">        return new ResponseEntity&lt;&gt;(productList, HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;ProductDto&gt; getProductById(@PathVariable UUID id){
+<span class="fc" id="L45">        ProductDto productDto = productService.getProductById(id);</span>
+<span class="fc" id="L46">        return new ResponseEntity&lt;&gt;(productDto, HttpStatus.OK);</span>
+    }
+
+    //   create Product
+    @PostMapping
+    public ResponseEntity&lt;Product&gt; createProduct(@RequestBody ProductDto productDto){
+<span class="fc" id="L52">        Product product = productService.addProduct(productDto);</span>
+<span class="fc" id="L53">        return new ResponseEntity&lt;&gt;(product,HttpStatus.CREATED);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Product&gt; updateProduct(@RequestBody ProductDto productDto,@PathVariable UUID id){
+<span class="fc" id="L58">        Product product = productService.updateProduct(productDto,id);</span>
+<span class="fc" id="L59">        return new ResponseEntity&lt;&gt;(product,HttpStatus.OK);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

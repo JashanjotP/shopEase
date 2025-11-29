@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.mapper</a> &gt; <span class="el_source">ProductMapper.java</span></div><h1>ProductMapper.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.mapper;
+
+import com.thecodereveal.shopease.dto.ProductDto;
+import com.thecodereveal.shopease.dto.ProductResourceDto;
+import com.thecodereveal.shopease.dto.ProductVariantDto;
+import com.thecodereveal.shopease.entities.*;
+import com.thecodereveal.shopease.services.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Component
+<span class="fc" id="L16">public class ProductMapper {</span>
+
+    @Autowired
+    private CategoryService categoryService;
+
+    public Product mapToProductEntity(ProductDto productDto){
+<span class="fc" id="L22">        Product product = new Product();</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if(null != productDto.getId()){</span>
+<span class="fc" id="L24">            product.setId(productDto.getId());</span>
+        }
+<span class="fc" id="L26">        product.setName(productDto.getName());</span>
+<span class="fc" id="L27">        product.setDescription(productDto.getDescription());</span>
+<span class="fc" id="L28">        product.setBrand(productDto.getBrand());</span>
+<span class="fc" id="L29">        product.setNewArrival(productDto.isNewArrival());</span>
+<span class="fc" id="L30">        product.setPrice(productDto.getPrice());</span>
+<span class="fc" id="L31">        product.setRating(productDto.getRating());</span>
+<span class="fc" id="L32">        product.setSlug(productDto.getSlug());</span>
+
+<span class="fc" id="L34">        Category category = categoryService.getCategory(productDto.getCategoryId());</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if(null != category){</span>
+<span class="fc" id="L36">            product.setCategory(category);</span>
+<span class="fc" id="L37">            UUID categoryTypeId = productDto.getCategoryTypeId();</span>
+
+<span class="fc" id="L39">            CategoryType categoryType = category.getCategoryTypes().stream().filter(categoryType1 -&gt; categoryType1.getId().equals(categoryTypeId)).findFirst().orElse(null);</span>
+<span class="fc" id="L40">            product.setCategoryType(categoryType);</span>
+        }
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if(null != productDto.getVariants()){</span>
+<span class="fc" id="L44">            product.setProductVariants(mapToProductVariant(productDto.getVariants(),product));</span>
+        }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if(null != productDto.getProductResources()){</span>
+<span class="fc" id="L48">            product.setResources(mapToProductResources(productDto.getProductResources(),product));</span>
+        }
+
+
+
+<span class="fc" id="L53">        return product;</span>
+    }
+
+    private List&lt;Resources&gt; mapToProductResources(List&lt;ProductResourceDto&gt; productResources, Product product) {
+
+<span class="fc" id="L58">        return productResources.stream().map(productResourceDto -&gt; {</span>
+<span class="fc" id="L59">            Resources resources= new Resources();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            if(null != productResourceDto.getId()){</span>
+<span class="fc" id="L61">                resources.setId(productResourceDto.getId());</span>
+            }
+<span class="fc" id="L63">            resources.setName(productResourceDto.getName());</span>
+<span class="fc" id="L64">            resources.setType(productResourceDto.getType());</span>
+<span class="fc" id="L65">            resources.setUrl(productResourceDto.getUrl());</span>
+<span class="fc" id="L66">            resources.setIsPrimary(productResourceDto.getIsPrimary());</span>
+<span class="fc" id="L67">            resources.setProduct(product);</span>
+<span class="fc" id="L68">            return resources;</span>
+<span class="fc" id="L69">        }).collect(Collectors.toList());</span>
+    }
+
+    private List&lt;ProductVariant&gt; mapToProductVariant(List&lt;ProductVariantDto&gt; productVariantDtos, Product product){
+<span class="fc" id="L73">        return productVariantDtos.stream().map(productVariantDto -&gt; {</span>
+<span class="fc" id="L74">            ProductVariant productVariant = new ProductVariant();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if(null != productVariantDto.getId()){</span>
+<span class="fc" id="L76">                productVariant.setId(productVariantDto.getId());</span>
+            }
+<span class="fc" id="L78">            productVariant.setColor(productVariantDto.getColor());</span>
+<span class="fc" id="L79">            productVariant.setSize(productVariantDto.getSize());</span>
+<span class="fc" id="L80">            productVariant.setStockQuantity(productVariantDto.getStockQuantity());</span>
+<span class="fc" id="L81">            productVariant.setProduct(product);</span>
+<span class="fc" id="L82">            return productVariant;</span>
+<span class="fc" id="L83">        }).collect(Collectors.toList());</span>
+    }
+
+    public List&lt;ProductDto&gt; getProductDtos(List&lt;Product&gt; products) {
+<span class="fc" id="L87">        return products.stream().map(this::mapProductToDto).toList();</span>
+    }
+
+    public ProductDto mapProductToDto(Product product) {
+
+<span class="fc" id="L92">        return ProductDto.builder()</span>
+<span class="fc" id="L93">                .id(product.getId())</span>
+<span class="fc" id="L94">                .brand(product.getBrand())</span>
+<span class="fc" id="L95">                .name(product.getName())</span>
+<span class="fc" id="L96">                .price(product.getPrice())</span>
+<span class="fc" id="L97">                .isNewArrival(product.isNewArrival())</span>
+<span class="fc" id="L98">                .rating(product.getRating())</span>
+<span class="fc" id="L99">                .description(product.getDescription())</span>
+<span class="fc" id="L100">                .slug(product.getSlug())</span>
+<span class="fc" id="L101">                .thumbnail(getProductThumbnail(product.getResources())).build();</span>
+    }
+
+    private String getProductThumbnail(List&lt;Resources&gt; resources) {
+<span class="fc" id="L105">        return resources.stream().filter(Resources::getIsPrimary).findFirst().orElse(null).getUrl();</span>
+    }
+
+    public List&lt;ProductVariantDto&gt; mapProductVariantListToDto(List&lt;ProductVariant&gt; productVariants) {
+<span class="fc" id="L109">       return productVariants.stream().map(this::mapProductVariantDto).toList();</span>
+    }
+
+    private ProductVariantDto mapProductVariantDto(ProductVariant productVariant) {
+<span class="fc" id="L113">        return ProductVariantDto.builder()</span>
+<span class="fc" id="L114">                .color(productVariant.getColor())</span>
+<span class="fc" id="L115">                .id(productVariant.getId())</span>
+<span class="fc" id="L116">                .size(productVariant.getSize())</span>
+<span class="fc" id="L117">                .stockQuantity(productVariant.getStockQuantity())</span>
+<span class="fc" id="L118">                .build();</span>
+    }
+
+    public List&lt;ProductResourceDto&gt; mapProductResourcesListDto(List&lt;Resources&gt; resources) {
+<span class="fc" id="L122">        return resources.stream().map(this::mapResourceToDto).toList();</span>
+    }
+
+    private ProductResourceDto mapResourceToDto(Resources resources) {
+<span class="fc" id="L126">        return ProductResourceDto.builder()</span>
+<span class="fc" id="L127">                .id(resources.getId())</span>
+<span class="fc" id="L128">                .url(resources.getUrl())</span>
+<span class="fc" id="L129">                .name(resources.getName())</span>
+<span class="fc" id="L130">                .isPrimary(resources.getIsPrimary())</span>
+<span class="fc" id="L131">                .type(resources.getType())</span>
+<span class="fc" id="L132">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

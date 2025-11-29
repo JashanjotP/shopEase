@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.services</a> &gt; <span class="el_source">ProductServiceImpl.java</span></div><h1>ProductServiceImpl.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.services;
+
+import com.thecodereveal.shopease.dto.ProductDto;
+import com.thecodereveal.shopease.entities.*;
+import com.thecodereveal.shopease.exceptions.ResourceNotFoundEx;
+import com.thecodereveal.shopease.mapper.ProductMapper;
+import com.thecodereveal.shopease.repositories.ProductRepository;
+import com.thecodereveal.shopease.specification.ProductSpecification;
+import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+<span class="fc" id="L18">public class ProductServiceImpl implements ProductService{</span>
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private ProductMapper productMapper;
+
+    @Override
+    public Product addProduct(ProductDto productDto) {
+<span class="fc" id="L31">        Product product = productMapper.mapToProductEntity(productDto);</span>
+<span class="fc" id="L32">        return productRepository.save(product);</span>
+    }
+
+    @Override
+    public List&lt;ProductDto&gt; getAllProducts(UUID categoryId, UUID typeId) {
+
+<span class="fc" id="L38">        Specification&lt;Product&gt; productSpecification= Specification.where(null);</span>
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if(null != categoryId){</span>
+<span class="fc" id="L41">            productSpecification = productSpecification.and(ProductSpecification.hasCategoryId(categoryId));</span>
+        }
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if(null != typeId){</span>
+<span class="fc" id="L44">            productSpecification = productSpecification.and(ProductSpecification.hasCategoryTypeId(typeId));</span>
+        }
+
+<span class="fc" id="L47">        List&lt;Product&gt; products = productRepository.findAll(productSpecification);</span>
+<span class="fc" id="L48">        return productMapper.getProductDtos(products);</span>
+    }
+
+    @Override
+    public ProductDto getProductBySlug(String slug) {
+<span class="fc" id="L53">        Product product= productRepository.findBySlug(slug);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(null == product){</span>
+<span class="fc" id="L55">            throw new ResourceNotFoundEx(&quot;Product Not Found!&quot;);</span>
+        }
+<span class="fc" id="L57">        ProductDto productDto = productMapper.mapProductToDto(product);</span>
+<span class="fc" id="L58">        productDto.setCategoryId(product.getCategory().getId());</span>
+<span class="fc" id="L59">        productDto.setCategoryTypeId(product.getCategoryType().getId());</span>
+<span class="fc" id="L60">        productDto.setVariants(productMapper.mapProductVariantListToDto(product.getProductVariants()));</span>
+<span class="fc" id="L61">        productDto.setProductResources(productMapper.mapProductResourcesListDto(product.getResources()));</span>
+<span class="fc" id="L62">        return productDto;</span>
+    }
+
+    @Override
+    public ProductDto getProductById(UUID id) {
+<span class="fc" id="L67">        Product product= productRepository.findById(id).orElseThrow(()-&gt; new ResourceNotFoundEx(&quot;Product Not Found!&quot;));</span>
+<span class="fc" id="L68">        ProductDto productDto = productMapper.mapProductToDto(product);</span>
+<span class="fc" id="L69">        productDto.setCategoryId(product.getCategory().getId());</span>
+<span class="fc" id="L70">        productDto.setCategoryTypeId(product.getCategoryType().getId());</span>
+<span class="fc" id="L71">        productDto.setVariants(productMapper.mapProductVariantListToDto(product.getProductVariants()));</span>
+<span class="fc" id="L72">        productDto.setProductResources(productMapper.mapProductResourcesListDto(product.getResources()));</span>
+<span class="fc" id="L73">        return productDto;</span>
+    }
+
+    @Override
+    public Product updateProduct(ProductDto productDto, UUID id) {
+<span class="fc" id="L78">        Product product= productRepository.findById(id).orElseThrow(()-&gt; new ResourceNotFoundEx(&quot;Product Not Found!&quot;));</span>
+<span class="fc" id="L79">        productDto.setId(product.getId());</span>
+<span class="fc" id="L80">        return productRepository.save(productMapper.mapToProductEntity(productDto));</span>
+    }
+
+    @Override
+    public Product fetchProductById(UUID id) throws Exception {
+<span class="fc" id="L85">        return productRepository.findById(id).orElseThrow(BadRequestException::new);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentIntentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.services</a> &gt; <span class="el_source">PaymentIntentService.java</span></div><h1>PaymentIntentService.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.services;
+
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
+import com.thecodereveal.shopease.auth.entities.User;
+import com.thecodereveal.shopease.entities.Order;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+@Component
+<span class="fc" id="L15">public class PaymentIntentService {</span>
+
+    public Map&lt;String, String&gt; createPaymentIntent(Order order) throws StripeException {
+<span class="fc" id="L18">        User user = order.getUser();</span>
+<span class="fc" id="L19">        Map&lt;String, String&gt; metaData = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L20">        metaData.put(&quot;orderId&quot;,order.getId().toString());</span>
+<span class="fc" id="L21">        PaymentIntentCreateParams paymentIntentCreateParams= PaymentIntentCreateParams.builder()</span>
+<span class="fc" id="L22">                .setAmount((long) (order.getTotalAmount() * 100 * 80)) // USD to INR</span>
+<span class="fc" id="L23">                .setCurrency(&quot;inr&quot;)//INR currency</span>
+<span class="fc" id="L24">                .putAllMetadata(metaData)</span>
+<span class="fc" id="L25">                .setDescription(&quot;Test Payment Project -1&quot;)</span>
+<span class="fc" id="L26">                .setAutomaticPaymentMethods(</span>
+<span class="fc" id="L27">                        PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()</span>
+                )
+<span class="fc" id="L29">                .build();</span>
+<span class="fc" id="L30">        PaymentIntent paymentIntent = PaymentIntent.create(paymentIntentCreateParams);</span>
+<span class="fc" id="L31">        Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L32">        map.put(&quot;client_secret&quot;, paymentIntent.getClientSecret());</span>
+<span class="fc" id="L33">        return map;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

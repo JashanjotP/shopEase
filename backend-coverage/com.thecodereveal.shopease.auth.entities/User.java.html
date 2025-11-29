@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.auth.entities</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.auth.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.thecodereveal.shopease.entities.Address;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+@Table(name = &quot;AUTH_USER_DETAILS&quot;)
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    private String firstName;
+
+    private String lastName;
+
+    @JsonIgnore
+    private String password;
+
+    private Date createdOn;
+
+    private Date updatedOn;
+
+    @Column(nullable = false,unique = true)
+    private String email;
+
+    private String phoneNumber;
+
+    private String provider;
+
+    private String verificationCode;
+
+    private boolean enabled=false;
+
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinTable(name = &quot;AUTH_USER_AUTHORITY&quot;,joinColumns = @JoinColumn(referencedColumnName = &quot;id&quot;),inverseJoinColumns = @JoinColumn(referencedColumnName = &quot;id&quot;))
+    private List&lt;Authority&gt; authorities;
+
+    @OneToMany(mappedBy = &quot;user&quot;, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List&lt;Address&gt; addressList;
+
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+<span class="fc" id="L60">        return authorities;</span>
+    }
+
+    @Override
+    public String getPassword() {
+<span class="fc" id="L65">        return this.password;</span>
+    }
+
+    @Override
+    public String getUsername() {
+<span class="fc" id="L70">        return this.email;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

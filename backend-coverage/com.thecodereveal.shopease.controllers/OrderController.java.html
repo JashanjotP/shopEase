@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shopease</a> &gt; <a href="index.source.html" class="el_package">com.thecodereveal.shopease.controllers</a> &gt; <span class="el_source">OrderController.java</span></div><h1>OrderController.java</h1><pre class="source lang-java linenums">package com.thecodereveal.shopease.controllers;
+
+import com.stripe.model.PaymentIntent;
+import com.thecodereveal.shopease.auth.dto.OrderResponse;
+import com.thecodereveal.shopease.dto.OrderDetails;
+import com.thecodereveal.shopease.dto.OrderItemDetail;
+import com.thecodereveal.shopease.dto.OrderRequest;
+import com.thecodereveal.shopease.entities.Order;
+import com.thecodereveal.shopease.services.OrderService;
+import com.thecodereveal.shopease.services.PaymentIntentService;
+import org.apache.coyote.BadRequestException;
+import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/api/order&quot;)
+@CrossOrigin
+<span class="fc" id="L27">public class OrderController {</span>
+
+
+    @Autowired
+    OrderService orderService;
+
+
+
+    @PostMapping
+    public ResponseEntity&lt;?&gt; createOrder(@RequestBody OrderRequest orderRequest, Principal principal) throws Exception {
+<span class="fc" id="L37">        OrderResponse orderResponse = orderService.createOrder(orderRequest,principal);</span>
+<span class="fc" id="L38">        return new ResponseEntity&lt;&gt;(orderResponse,HttpStatus.OK);</span>
+    }
+
+    @PostMapping(&quot;/update-payment&quot;)
+    public ResponseEntity&lt;?&gt; updatePaymentStatus(@RequestBody Map&lt;String,String&gt; request){
+<span class="fc" id="L43">        Map&lt;String,String&gt; response = orderService.updateStatus(request.get(&quot;paymentIntent&quot;),request.get(&quot;status&quot;));</span>
+<span class="fc" id="L44">        return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+    }
+
+    @PostMapping(&quot;/cancel/{id}&quot;)
+    public ResponseEntity&lt;?&gt; cancelOrder(@PathVariable UUID id,Principal principal){
+<span class="fc" id="L49">        orderService.cancelOrder(id,principal);</span>
+<span class="fc" id="L50">        return new ResponseEntity&lt;&gt;(HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/user&quot;)
+    public ResponseEntity&lt;List&lt;OrderDetails&gt;&gt; getOrderByUser(Principal principal) {
+<span class="fc" id="L55">        List&lt;OrderDetails&gt; orders = orderService.getOrdersByUser(principal.getName());</span>
+<span class="fc" id="L56">        return new ResponseEntity&lt;&gt;(orders, HttpStatus.OK);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
