@@ -6,6 +6,7 @@ import com.thecodereveal.shopease.entities.CategoryType;
 import com.thecodereveal.shopease.entities.Product;
 import com.thecodereveal.shopease.entities.Resources;
 import com.thecodereveal.shopease.repositories.CategoryRepository;
+import com.thecodereveal.shopease.repositories.OrderRepository;
 import com.thecodereveal.shopease.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +31,15 @@ class ProductIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     private Category persistedCategory;
     private CategoryType persistedType;
 
     @BeforeEach
     void setUp() {
+        orderRepository.deleteAll();
         productRepository.deleteAll();
         categoryRepository.deleteAll();
 

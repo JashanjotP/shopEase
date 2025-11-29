@@ -1,0 +1,120 @@
+name: Unit Tests & Coverage
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  # ------------------------------------------------------------------
+  # JOB 1: BACKEND UNIT TESTS (Parallel)
+  # ------------------------------------------------------------------
+  backend-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Backend Tests
+        # Added 'jacoco:report' ensures the HTML site is actually generated
+        run: mvn clean test jacoco:report
+
+      - name: Upload Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 1
+
+  # ------------------------------------------------------------------
+  # JOB 2: FRONTEND UNIT TESTS (Parallel)
+  # ------------------------------------------------------------------
+  frontend-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # Using 20 to prevent the 'styleText' error
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        # Runs tests, generates coverage, and exits (no watch mode)
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage/lcov-report/
+          retention-days: 1
+
+  # ------------------------------------------------------------------
+  # JOB 3: DEPLOY TO GH-PAGES
+  # ------------------------------------------------------------------
+  deploy-unit-reports:
+    # Only run deployment if tests pass AND we are on the master branch
+    if: github.ref == 'refs/heads/master'
+    needs: [backend-unit, frontend-unit]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout for Dashboard
+        uses: actions/checkout@v4
+        # We need to checkout so we can grab your 'dashboard.html' (index.html) source
+
+      # 1. Prepare Directories
+      - name: Create Directories
+        run: |
+          mkdir -p public-temp/backend-coverage
+          mkdir -p public-temp/frontend-coverage
+
+      # 2. Download Backend Report
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: public-temp/backend-coverage
+
+      # 3. Download Frontend Report
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: public-temp/frontend-coverage
+
+      # 4. Copy Dashboard (The index.html file you created earlier)
+      - name: Setup Dashboard
+        run: cp index.html public-temp/index.html
+
+      # 5. Push to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./public-temp
+          # CRITICAL: keep_files: true ensures we DO NOT delete the Mutation reports
+          keep_files: true 
+          commit_message: "Update Unit Test Coverage [skip ci]"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
