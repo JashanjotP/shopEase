@@ -27,7 +27,7 @@ jobs:
           cache: maven
 
       - name: Run Backend Tests
-        # Added 'jacoco:report' ensures the HTML site is actually generated
+        working-directory: ./backend
         run: mvn clean test jacoco:report
 
       - name: Upload Backend Artifact
