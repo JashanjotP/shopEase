@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Assurance Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-secondary: #636e72;
+            --react-color: #61dafb;
+            --spring-color: #6db33f;
+            --hover-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-left: 5px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        /* Spring Boot Styling */
+        .card.backend {
+            border-left-color: var(--spring-color);
+        }
+        .card.backend .badge {
+            background-color: rgba(109, 179, 63, 0.15);
+            color: #4a8a2a;
+        }
+
+        /* React Styling */
+        .card.frontend {
+            border-left-color: var(--react-color);
+        }
+        .card.frontend .badge {
+            background-color: rgba(97, 218, 251, 0.15);
+            color: #0078a0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 60px;
+            font-size: 0.85rem;
+            color: #b2bec3;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project Health Reports</h1>
+        <p class="subtitle">Centralized hub for Unit Coverage and Mutation Testing results</p>
+    </header>
+
+    <div class="grid-container">
+        
+        <a href="./backend-coverage/index.html" class="card backend">
+            <div class="card-header">
+                <h2>Backend Coverage</h2>
+                <span class="badge">Spring Boot</span>
+            </div>
+            <p class="description">JaCoCo execution analysis showing line, branch, and instruction coverage for Java services.</p>
+        </a>
+
+        <a href="./backend-mutation/index.html" class="card backend">
+            <div class="card-header">
+                <h2>Backend Mutation</h2>
+                <span class="badge">Spring Boot</span>
+            </div>
+            <p class="description">PiTest report detailing surviving mutants to measure the robustness of your unit tests.</p>
+        </a>
+
+        <a href="./frontend-coverage/index.html" class="card frontend">
+            <div class="card-header">
+                <h2>Frontend Coverage</h2>
+                <span class="badge">React</span>
+            </div>
+            <p class="description">Jest/Vite coverage report showing statement, branch, and function coverage for UI components.</p>
+        </a>
+
+        <a href="./frontend-mutation/index.html" class="card frontend">
+            <div class="card-header">
+                <h2>Frontend Mutation</h2>
+                <span class="badge">React</span>
+            </div>
+            <p class="description">Stryker mutation report highlighting UI logic where tests failed to detect code changes.</p>
+        </a>
+
+    </div>
+
+    <div class="footer">
+        Generated Report Dashboard
+    </div>
+
+</body>
+</html>
