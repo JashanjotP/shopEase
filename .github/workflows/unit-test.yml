@@ -102,9 +102,6 @@ jobs:
           name: frontend-coverage-report
           path: public-temp/frontend-coverage
 
-      # 4. Copy Dashboard (The index.html file you created earlier)
-      - name: Setup Dashboard
-        run: cp index.html public-temp/index.html
 
       # 5. Push to GitHub Pages
       - name: Deploy to GitHub Pages
