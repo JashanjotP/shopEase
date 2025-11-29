@@ -168,6 +168,9 @@
 					<targetTests>
 						<param>com.thecodereveal.shopease*</param>
 					</targetTests>
+					<excludedTestClasses>
+						<param>com.thecodereveal.shopease.controllers.*IntegrationTest</param>
+					</excludedTestClasses>
 				</configuration>
 			</plugin>
 		</plugins>
