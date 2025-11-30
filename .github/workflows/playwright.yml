@@ -20,17 +20,29 @@ jobs:
       # We pull secrets from GitHub and write them to a file so Docker can read them
       - name: Create .env file
         run: |
-          echo "DB_USER=${{ secrets.DB_USER || 'postgres' }}" >> .env
-          echo "DB_PASS=${{ secrets.DB_PASS || 'password' }}" >> .env
+          # Database (Host is 'db' for Docker networking)
+          echo "DB_HOST=db" >> .env
+          echo "DB_USER=${{ secrets.DB_USER || 'default' }}" >> .env
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME || 'shopease' }}" >> .env
-          echo "STRIPE_SECRET=${{ secrets.STRIPE_SECRET || 'sk_test_mock' }}" >> .env
-          # Add other secrets here as needed
-          # echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
 
+          # Security Keys
+          echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
+          echo "STRIPE_SECRET=${{ secrets.STRIPE_SECRET }}" >> .env
+
+          # Google OAuth (Required for backend startup)
+          echo "GOOGLE_OAUTH2_CLIENT_ID=${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }}" >> .env
+          echo "GOOGLE_OAUTH2_CLIENT_SECRET=${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }}" >> .env
+
+          # Services (Using dummy values if secret is missing, to prevent crash)
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD || 'dummy' }}" >> .env
+          echo "FILE_ZONE=dummy" >> .env
+          echo "CDN_KEY=dummy" >> .env
+          echo "CDN_HOST=http://localhost:3000" >> .env
       # 2. Start the Docker Stack
       # This builds your images and starts the containers
       - name: Start Docker Compose
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       # 3. Wait for the Stack to be Ready
       # We install 'wait-on' to ping the Frontend (3000) and Backend (8080)
