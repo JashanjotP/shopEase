@@ -1,0 +1,70 @@
+name: Docker E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Create the .env file for Docker Compose
+      # We pull secrets from GitHub and write them to a file so Docker can read them
+      - name: Create .env file
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER || 'postgres' }}" >> .env
+          echo "DB_PASS=${{ secrets.DB_PASS || 'password' }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME || 'shopease' }}" >> .env
+          echo "STRIPE_SECRET=${{ secrets.STRIPE_SECRET || 'sk_test_mock' }}" >> .env
+          # Add other secrets here as needed
+          # echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
+
+      # 2. Start the Docker Stack
+      # This builds your images and starts the containers
+      - name: Start Docker Compose
+        run: docker-compose up -d --build
+
+      # 3. Wait for the Stack to be Ready
+      # We install 'wait-on' to ping the Frontend (3000) and Backend (8080)
+      - name: Wait for Services
+        run: |
+          npm install -g wait-on
+          # Wait up to 3 minutes for both ports to respond
+          npx wait-on tcp:3000 tcp:8080 --timeout 180000
+
+      # 4. Install Playwright (On the Runner, not inside Docker)
+      # We run the tests from the "outside" looking in, just like you do locally
+      - name: Install Playwright
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      # 5. Run the Tests
+      - name: Run E2E Tests
+        working-directory: ./frontend
+        run: npx playwright test
+        env:
+          # Ensure Playwright targets the Dockerized Frontend
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+          CI: true
+
+      # 6. Upload Report on Failure
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 5
+      
+      # 7. Cleanup (Optional but good for logs)
+      - name: Stop Containers
+        if: always()
+        run: docker-compose down
