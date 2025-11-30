@@ -1,6 +1,7 @@
 name: Docker E2E Tests
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
