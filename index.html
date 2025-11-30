@@ -12,6 +12,8 @@
             --text-secondary: #636e72;
             --react-color: #61dafb;
             --spring-color: #6db33f;
+            --playwright-color: #45ba4b; /* Green for Playwright/Success */
+            --e2e-color: #2EAD33; /* Distinct green for E2E */
             --hover-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
@@ -88,6 +90,15 @@
             color: #0078a0;
         }
 
+        /* E2E Styling (New) */
+        .card.e2e {
+            border-left-color: var(--e2e-color);
+        }
+        .card.e2e .badge {
+            background-color: rgba(46, 173, 51, 0.15);
+            color: var(--e2e-color);
+        }
+
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -126,7 +137,7 @@
 
     <header>
         <h1>Project Health Reports</h1>
-        <p class="subtitle">Centralized hub for Unit Coverage and Mutation Testing results</p>
+        <p class="subtitle">Centralized hub for Unit Coverage, Mutation Testing, and E2E results</p>
     </header>
 
     <div class="grid-container">
@@ -161,6 +172,14 @@
                 <span class="badge">React</span>
             </div>
             <p class="description">Stryker mutation report highlighting UI logic where tests failed to detect code changes.</p>
+        </a>
+
+        <a href="./e2e-tests/index.html" class="card e2e">
+            <div class="card-header">
+                <h2>E2E Tests</h2>
+                <span class="badge">Playwright</span>
+            </div>
+            <p class="description">End-to-end execution report verifying full user workflows across the frontend and backend containers.</p>
         </a>
 
     </div>
